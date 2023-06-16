@@ -1,0 +1,40 @@
+Questions
+
+1. if
+2. switch
+3. do-while, bottom
+4. for (;;) {}
+5. while (true) {}
+
+Exercises
+
+1.
+
+a. third string
+b. because we enter the first if statement but the 
+nested statement x == 0 is false so first is not printed.
+Moreover, we did enter the first statement so the else 
+is not executed, so second is not printed. 
+Finally, we continue normal operation in the global
+scope and third is printed as a result.
+ 
+c.  
+if (aNumber >= 0)
+    if (aNumber == 0)
+        System.out.println("first string");
+            
+else 
+    System.out.println("second string");
+
+System.out.println("third string");
+
+d.
+if (aNumber >= 0) {
+    if (aNumber == 0) {
+        System.out.println("first string");
+    }
+}            
+else {
+    System.out.println("second string");
+}
+System.out.println("third string");

@@ -5,5 +5,5 @@
  * @author USUARIO
  *
  */
-module tutorial {
+module reading1 {
 }

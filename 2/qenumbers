@@ -1,0 +1,107 @@
+Questions
+
+1.
+a. toHexString
+b. valueOf
+c. IsNaN
+
+2. false.
+Because for the method .equals() to be true
+the value AND the type object must be the same, which in 
+this case is not true, with a int and a long.
+
+
+Exercises
+
+1. 
+public class MaxVariablesDemo {
+    public static void main(String args[]) {
+
+        //integers
+        byte largestByte = Byte.MIN_VALUE;
+        short largestShort = Short.MIN_VALUE;
+        int largestInteger = Integer.MIN_VALUE;
+        long largestLong = Long.MIN_VALUE;
+
+        //real numbers
+        float largestFloat = Float.MIN_VALUE;
+        double largestDouble = Double.MIN_VALUE;
+
+        //Display them all.
+        System.out.println("The largest byte value is "
+                           + largestByte + ".");
+        System.out.println("The largest short value is "
+                           + largestShort + ".");
+        System.out.println("The largest integer value is "
+                           + largestInteger + ".");
+        System.out.println("The largest long value is "
+                           + largestLong + ".");
+
+        System.out.println("The largest float value is "
+                           + largestFloat + ".");
+        System.out.println("The largest double value is "
+                           + largestDouble + ".");
+
+    }
+}
+
+-128
+-2^16
+-2^32
+-2^64
+-2.^32
+-2.^64
+
+
+2.
+
+public static void main(String[] args) {
+
+int total;
+
+while input {
+
+total += inputbuffer;
+}
+
+}
+
+3.
+
+import java.text.*;
+
+public class DecimalFormatDemo {
+
+   static public void customFormat(String pattern, double value ) {
+      DecimalFormat myFormatter = new DecimalFormat(pattern);
+      String output = myFormatter.format(value);
+      System.out.println(value + "  " + pattern + "  " + output);
+   }
+
+   static public void main(String[] args) {
+
+      
+   }
+}
+
+public static void main(String[] args) {
+
+float total;
+DecimalFormat myFormatter = new DecimalFormat(pattern);
+
+while input {
+
+String output = myFormatter.format(value);
+total += inputbuffer;
+}
+
+customFormat(".##", total);
+}
+
+
+
+
+
+
+3.
+

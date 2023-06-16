@@ -1,0 +1,47 @@
+Questions
+
+1. >, +
+2. 
+a. i = 11, n = 0
+b. i = 11, n = 1
+3. !
+4. == 
+5. If someCondition is true then we will evaluate (and then assign)
+value1, otherwise we evaluate value2.
+
+Exercises
+
+1.
+class ArithmeticDemo {
+
+     public static void main (String[] args){
+          
+          int result = 3; // result is now 3
+          System.out.println(result);
+
+          result--; // result is now 2
+          System.out.println(result);
+
+          result *= 2; // result is now 4
+          System.out.println(result);
+
+          result /= 2; // result is now 2
+          System.out.println(result);
+
+          result += 8; // result is now 10
+          result %= 7; // result is now 3
+          System.out.println(result);
+     }
+}
+
+2.
+        System.out.println(++i);  // "6"
+        System.out.println(i++);  // "6"
+
+in the first statement ++i first evaluates and then it 
+is printed.
+So after the first i = 6.
+However, in the second i++ evaluates after we evaluate 
+println, so what is passed to println is i =6, which it 
+prints. 
+after the second println i++ its evaluated and i is now 7.
