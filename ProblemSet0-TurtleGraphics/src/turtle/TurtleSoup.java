@@ -3,10 +3,8 @@
  */
 package turtle;
 
-import java.awt.*;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 public class TurtleSoup {
 

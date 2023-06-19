@@ -81,12 +81,10 @@ There are also some special cases for multiplication that we should check: 0, 1,
 
 - a or b is 0, 1, or -1
 
-
 Finally, as a suspicious tester trying to find bugs, we might suspect that the implementor of BigInteger might try to make it faster by using int or long internally when possible, and only fall back to an expensive general representation when the value is too big. So we should definitely also try integers that are very big, bigger than the biggest long.
 
 - a or b is small
 - the absolute value of a or b is bigger than Long.MAX_VALUE, the biggest possible primitive integer in Java, which is roughly 2^63.
-
 
 Putting all this together we have the following cases:
 
@@ -97,7 +95,6 @@ Putting all this together we have the following cases:
 - small negative integer
 - huge positive integer
 - huge negative integer
-
 
 So this will produce 7 × 7 = 49 partitions that completely cover the space of pairs of integers.
 To produce the test suite, we would pick an arbitrary pair (a,b) from each square of the grid, for example:
@@ -110,10 +107,10 @@ To produce the test suite, we would pick an arbitrary pair (a,b) from each squar
 The figure below shows how the two-dimensional (a,b) space is divided by this partition, and the points are test cases that we might choose to completely cover the partition.
 ![multiply-partition.png](../_resources/multiply-partition.png)
 
-
 ## Example: max()
 
 Our specification:
+
 ```
 /**
  * @param a  an argument
@@ -145,21 +142,22 @@ Bugs often occur at boundaries between subdomains. Some examples:
 - 0 is a boundary between positive numbers and negative numbers.
 - Emptiness (the empty string, empty list, empty array) for collection types.
 
-These bugs are commonly occasionated by off-by-one mistakes, such as writing <= instead of <, or initializing a counter to 0 instead of 1.
+These bugs are commonly occasioned by off-by-one mistakes, such as writing <= instead of <, or initializing a counter to 0 instead of 1.
 
 For our max() example, we should change our suit of test cases to.
 
 relationship between a and b
+
 - a < b
 - a = b
 - a > b
-value of a
+    value of a
 - a = 0
 - a < 0
 - a > 0
 - a = minimum integer
 - a = maximum integer
-value of b
+    value of b
 - b = 0
 - b < 0
 - b > 0
@@ -168,34 +166,40 @@ value of b
 
 Now let’s pick test values that cover all these classes:
 
-- (1, 2) covers a < b, a > 0, b > 0
+- (1, 2) covers a &lt; b, a &gt; 0, b > 0
 - (-1, -3) covers a > b, a < 0, b < 0
 - (0, 0) covers a = b, a = 0, b = 0
-- (Integer.MIN_VALUE, Integer.MAX_VALUE) covers a < b, a = minint, b = maxint
-- (Integer.MAX_VALUE, Integer.MIN_VALUE) covers a > b, a = maxint, b = minint
-
+- (Integer.MIN\_VALUE, Integer.MAX\_VALUE) covers a < b, a = minint, b = maxint
+- (Integer.MAX\_VALUE, Integer.MIN\_VALUE) covers a > b, a = maxint, b = minint
 
 # Two Extremes for Covering the Partition
 
 After partitioning the input space, we can choose how exhaustive we want the test suite to be:
 
 #### Full Cartesian product.
+
 Every legal combination of the partition dimensions is covered by one test case. We did this for the multiply() example.
 
 #### Cover each part.
+
 Every part of each dimension is covered by at least one test case, but not necessarily every combination. We took this approach for the max() example.
 
 # Blackbox and Whitebox Testing
+
 #### Blackbox testing
+
 Blackbox testing means choosing test cases only from the specification, not the implementation of the function. That’s what we’ve been doing in our examples so far. We partitioned and looked for boundaries in multiply and max without looking at the actual code for these functions.
 
 #### Whitebox testing
+
 Whitebox testing means choosing test cases with knowledge of how the function is actually implemented. For example, if the implementation selects different algorithms depending on the input, then you should partition according to those domains. If the implementation keeps an internal cache that remembers the answers to previous inputs, then you should test repeated inputs.
 
 # Documenting Your Testing Strategy
+
 For the example function on the left, on the right is how we can document the testing strategy we worked on in the partitioning exercises above . The strategy also addresses some boundary values we didn’t consider before.
 
 #### Specification
+
 ```
 /**
  * Reverses the end of a string.
@@ -219,7 +223,9 @@ For the example function on the left, on the right is how we can document the te
  */
 static String reverseEnd(String text, int start)
 ```
+
 #### Documenting the strategy
+
 ```
 /*
  * Testing strategy
@@ -236,7 +242,9 @@ static String reverseEnd(String text, int start)
  * Exhaustive Cartesian coverage of partitions.
  */
 ```
+
 #### Document how each test case was chosen
+
 ```
 // covers test.length() = 0,
 //        start = 0 = text.length(),
@@ -249,6 +257,7 @@ static String reverseEnd(String text, int start)
 ```
 
 # Coverage
+
 One way to judge a test suite is to ask how thoroughly it exercises the program. This notion is called coverage . Here are three common kinds of coverage:
 
 - Statement coverage: is every statement run by some test case?
@@ -260,12 +269,12 @@ Branch coverage is stronger (requires more tests to achieve) than statement cove
 A standard approach to testing is to add tests until the test suite achieves adequate statement coverage: i.e., so that every reachable statement in the program is executed by at least one test case.
 
 # Unit Testing and Stubs
+
 A well-tested program will have tests for every individual module that it contains. A test that tests an individual module, in isolation if possible, is called a unit test. Testing modules in isolation leads to much easier debugging. When a unit test for a module fails, you can be more confident that the bug is found in that module, rather than anywhere in the program.
 
 The opposite of a unit test is an integration test, which tests a combination of modules, or even the entire program. If all you have are integration tests, then when a test fails, you have to hunt for the bug. It might be anywhere in the program. Integration tests are still important, because a program can fail at the connections between modules. For example, one module may be expecting different inputs than it’s actually getting from another module. But if you have a thorough set of unit tests that give you confidence in the correctness of individual modules, then you’ll have much less searching to do to find the bug.
 
-
-Isolating a higher-level module is possible if we write stub versions of the modules that it calls. For example, a stub for getWebPage() wouldn’t access the internet at all, but instead would return mock web page content no matter what URL was passed to it. 
+Isolating a higher-level module is possible if we write stub versions of the modules that it calls. For example, a stub for getWebPage() wouldn’t access the internet at all, but instead would return mock web page content no matter what URL was passed to it.
 
 # Automated Testing and Regression Testing
 
