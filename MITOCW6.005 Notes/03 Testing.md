@@ -14,7 +14,7 @@ Even with the best validation, it’s very hard to achieve perfect quality in so
 
 # Why Software Testing is Hard
 
-Exhaustive testing is infeasible. The space of possible test cases is generally too big to cover exhaustively. Imagine exhaustively testing a 32-bit floating-point multiply operation, a*b . There are 2^64 test cases!
+Exhaustive testing is infeasible. The space of possible test cases is generally too big to cover exhaustively. Imagine exhaustively testing a 32-bit floating-point multiply operation, a*b. There are 2^64 test cases!
 
 Haphazard testing is less likely to find bugs, it also doesn’t increase our confidence in program correctness.
 
