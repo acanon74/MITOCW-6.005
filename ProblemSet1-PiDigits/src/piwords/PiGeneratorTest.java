@@ -65,7 +65,7 @@ public class PiGeneratorTest {
      *
      * Preconditions:
      * If precision < 0, return null.
-     * 
+     *
      * We partition the input space as follows:
      *
      * precision might be: 0, 1, int.
