@@ -1,8 +1,10 @@
 package piwords;
 
+import java.util.Arrays;
+
 public class DigitsToStringConverter {
     /**
-     * Given a list of digits, a base, and an mapping of digits of that base to
+     * Given a list of digits, a base, and a mapping of digits of that base to
      * chars, convert the list of digits into a character string by applying the
      * mapping to each digit in the input.
      * 
@@ -16,9 +18,23 @@ public class DigitsToStringConverter {
      *                 mutated.
      * @return A String encoding the input digits with alphabet.
      */
+
     public static String convertDigitsToString(int[] digits, int base,
                                                char[] alphabet) {
         // TODO: Implement (Problem 3.b)
-        return "";
+        if (alphabet.length != base) {
+            return null;
+        }
+        char[] result = new char[digits.length];
+
+        for (int i = 0; i < digits.length; i++) {
+
+            if (digits[i] < 0 || digits[i] >= base) {
+                return null;
+            }
+            result[i] = alphabet[digits[i]];
+
+        }
+        return new StringBuilder().append(result).toString();
     }
 }

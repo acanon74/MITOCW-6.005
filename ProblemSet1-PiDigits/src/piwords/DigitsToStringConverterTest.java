@@ -14,9 +14,22 @@ public class DigitsToStringConverterTest {
         char[] alphabet = {'d', 'c', 'b', 'a'};
 
         String expectedOutput = "dcba";
-        assertEquals(expectedOutput,
-                     DigitsToStringConverter.convertDigitsToString(
-                             input, 4, alphabet));
+        assertEquals(expectedOutput, DigitsToStringConverter.convertDigitsToString(
+                input, 4, alphabet));
+
+
+        assertEquals(null, DigitsToStringConverter.convertDigitsToString(
+                new int[]{2, 55, 3}, 4, alphabet));
+        assertEquals(null, DigitsToStringConverter.convertDigitsToString(
+                new int[]{1, 4, 1}, 4, alphabet));
+
+        assertEquals(null, DigitsToStringConverter.convertDigitsToString(
+                new int[]{0, -3, 2}, 4, alphabet));
+
+        assertEquals(null, DigitsToStringConverter.convertDigitsToString(
+                new int[]{1, 2, 3}, 10, alphabet));
+
+
     }
 
     // TODO: Write more tests (Problem 3.a)
