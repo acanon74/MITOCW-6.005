@@ -26,7 +26,7 @@ public class WordFinderTest {
      * - It is not in the haystack.
      * - The needle can be found in two distinct places.
      *
-     * Breadkdown of every test used:
+     * Breakdown of every test used:
      *
      * It is a word.
      * expectedOutput2.put("alphabet", 0);
