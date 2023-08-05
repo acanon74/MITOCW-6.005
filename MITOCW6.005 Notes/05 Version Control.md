@@ -29,7 +29,7 @@ In a distributed system, all repositories are created equal, and it’s up to us
 - **Revert** : restore old versions, in whole or in part
 - **Compare versions**
 - **Review history** : for the whole project or individual files
-- **Not just for code** : prose, images, …
+- **Not just for code** : text, images, …
 
 It should **allow multiple people to work together** :
 
@@ -54,14 +54,14 @@ Some commits have the same parent: they are versions that diverged from a common
 
 Finally, HEAD points to our current commit — almost. We also need to remember which branch we’re working on. So HEAD points to the current branch, which points to the current commit.
 
-**The Git object graph stores each version of an individual file once , and allows multiple commits to share that one copy. To the left is a more complete rendering of the Git object graph for our example.**
+**The Git object graph stores each version of an individual file once, and allows multiple commits to share that one copy. To the left is a more complete rendering of the Git object graph for our example.**
 
 ![hello-git-history-trees.png](../_resources/hello-git-history-trees.png)
 
 # Importance of Version Control
 
 - **Safe from bugs.** find when and where something broke look for other, similar mistakes gain confidence that code hasn’t changed accidentally.
-- **Easy to understand.** why was a change made?, what else was changed at the same time?, who can I ask about this code? .
+- **Easy to understand.** why was a change made?, what else was changed at the same time?, who can I ask about this code?.
 - **Ready for change.** all about managing and organizing changes, accept and integrate changes from other developers isolate speculative work on branches.
 
 # More on Git

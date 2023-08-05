@@ -6,7 +6,7 @@ Specifications are good for the client of a method because they spare the task o
 
 Specifications are good for the implementer of a method because they give the implementor freedom to change the implementation without telling clients. Specifications can make code faster, too. We’ll see that using a weaker specification can rule out certain states in which a method might be called. This restriction on the inputs might allow the implementor to skip an expensive check that is no longer necessary and use a more efficient implementation.
 
-The contract acts as a firewall between client and implementor. It shields the client from the details of the workings of the unit — you don’t need to read the source code of the procedure if you have its specification. And it shields the implementor from the details of the usage of the unit; he doesn’t have to ask every client how she plans to use the unit. This firewall results in decoupling , allowing the code of the unit and the code of a client to be changed independently, so long as the changes respect the specification — each obeying its obligation.
+The contract acts as a firewall between client and implementor. It shields the client from the details of the workings of the unit — you don’t need to read the source code of the procedure if you have its specification. And it shields the implementor from the details of the usage of the unit; he doesn’t have to ask every client how she plans to use the unit. This firewall results in decoupling, allowing the code of the unit and the code of a client to be changed independently, so long as the changes respect the specification — each obeying its obligation.
 
 # Specification structure
 
@@ -37,7 +37,7 @@ More at:
 
 # Null references
 
-In Java, references to objects and arrays can also take on the special value null , which means that the reference doesn’t point to an object.
+In Java, references to objects and arrays can also take on the special value null, which means that the reference doesn’t point to an object.
 
 - Primitives cannot be null, and the compiler will reject such attempts with static errors.
 - We can assign null to any non-primitive variable, but you’ll get errors at runtime because you can’t call any methods or use any fields with one of these references.
@@ -61,9 +61,9 @@ A specification of a method can talk about the parameters and return value of th
 
 # Testing and specifications
 
-black box tests that are chosen with only the specification in mind, and glass box tests that are chosen with knowledge of the actual implementation. But it’s important to note that even glass box tests must follow the specification . Your implementation may provide stronger guarantees than the specification calls for, or it may have specific behavior where the specification is undefined. But your test cases should not count on that behavior. Test cases must obey the contract, just like every other client.
+black box tests that are chosen with only the specification in mind, and glass box tests that are chosen with knowledge of the actual implementation. But it’s important to note that even glass box tests must follow the specification. Your implementation may provide stronger guarantees than the specification calls for, or it may have specific behavior where the specification is undefined. But your test cases should not count on that behavior. Test cases must obey the contract, just like every other client.
 
-So what does glass box testing mean, if it can’t go beyond the spec? It means you are trying to find new test cases that exercise different parts of the implementation, but still checking those test cases in an implementation-independent way.
+So what does glass box testing mean, if it can’t go beyond the spec? It means you are trying to find new test cases that exercise different parts of the implementation, but still checking those test cases in an implementation-independent way. For example, testing for repeat values in the case of a stack. Or any other internal optimizations in the code.
 
 ## Testing units
 

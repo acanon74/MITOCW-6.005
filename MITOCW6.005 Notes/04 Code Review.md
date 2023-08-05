@@ -34,7 +34,7 @@ The only two commonly used constants are 0 and 1. **All other constants are call
 
 # One Purpose For Each Variable
 
-Don’t reuse parameters, and don’t reuse variables. Introduce them freely, give them good names, and just stop using them when you stop needing them.
+Don’t reuse parameters, and don’t reuse variables. Instead, introduce them freely, give them good names, and just stop using them when you stop needing them.
 
 Method parameters, in particular, should generally be left unmodified. (This is important for being ready-for-change — in the future, some other part of the method may want to know what the original parameters of the method were, so you shouldn’t blow them away while you’re computing.)
 
@@ -56,9 +56,9 @@ Good method and variable names are long and self-descriptive. Comments can often
 
 Abusing of global variables arises problems, some of them are:
 
-- Non-locality -- Source code is easiest to understand when the scope of its individual elements are limited. Global variables are modifiable everywhere, which makes it difficult to remember every use of them.
-- No Access Control or Constraint Checking -- A global variable can be get or set by any part of the program, and any rules regarding its use can be easily broken or forgotten.
-- Concurrency issues -- if global variables can be accessed by multiple threads of execution, synchronization is necessary (and too-often neglected).
+- Non-locality - Source code is easiest to understand when the scope of its individual elements are limited. Global variables are modifiable everywhere, which makes it difficult to remember every use of them.
+- No Access Control or Constraint Checking - A global variable can be get or set by any part of the program, and any rules regarding its use can be easily broken or forgotten.
+- Concurrency issues - If global variables can be accessed by multiple threads of execution, synchronization is necessary (and too-often neglected).
 
 Read more at: http://wiki.c2.com/?GlobalVariablesAreBad
 
