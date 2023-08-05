@@ -13,3 +13,7 @@ So, instead of skipping the problem set, I decided to solve a different PS from 
 ## Problem Set 1: Test-first programming
 
 Write black-box tests based on specifications, prior to writing code. Wrote classes to convert digits of pi between bases, express digits in base-26, convert base-26 digits into characters, and ultimately find English words in the resulting string of characters.
+
+http://mit.usiu.ac.ke/courses/electrical-engineering-and-computer-science/6-005-elements-of-software-construction-fall-2011/assignments/MIT6_005F11_ps1.pdf
+
+Pretty fun project. It serves the purpose of forcing you into thinking the Java way. Kind of challenging at first, since you might be able to think dozens of ways to write a piece of code in Python or C++, taking advantage of some features in those languages (without static typing in Python, or pointers and vectors in C++). Not because this are not present in Java (in fact they probably are), but because you are still a beginner and have no idea of similar or better features present in Java. 
