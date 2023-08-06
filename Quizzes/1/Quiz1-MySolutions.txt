@@ -1,0 +1,83 @@
+1. 
+a.
+d WRONG c
+b.
+b OK
+c.
+d,a OK
+d.
+c,d WRONG a,c,d 
+e.
+b OK
+
+2.
+a.
+char, int -> Tetromino || Creator || constructor OK
+(Implicit) Tetromino -> void (or rather a mutation) || Mutator || instance method OK
+(Implicit) Tetromino -> char || Observer || instance method OK
+
+b.
+A vs B
+
+Spec A is stronger than spec B because: "Any character" is a weaker precondition for the client. OK
+
+B vs C
+
+Spec B is stronger than spec C because: an "English alphabetic character" is a weaker precondition than requesting a value already known to be true. OK
+
+3.
+a.
+EXP
+EXP
+EXP WRONG NONE
+RI 
+NONE
+AF
+NONE
+NONE
+AF
+RI
+NONE
+NONE
+
+Here I got too involved in the semantics, so much that I forgot about that the spec is actually for.
+
+b.
+Does not states what are its @param, @return, or if it mutates the object. WRONG The specification must be abstract, it should not talk about the representation. The specification should be declarative, not operational.
+
+c.
+Does not clarify whether it mutates the object and returns its own reference, or creates a new edited one. WRONG The specification, which says a tetromino is returned, does not agree with return type void.
+
+d.
+It is not clear on what it does modify. Does it mutate the object, but doesnt return a reference? Or it doesnt and returns a new, edited object? Also, doesnt use @param and @return. SOMEWHAT This specification is too weak, it does not specify the amount of rotation
+
+4.
+a.
+To maintain generality, I can only imagine testing for the number of pieces? Although we must make sure that we test every single shape and rotation.
+That would be 0, 1, >1. All combinations of shape and rotation. ?? Not included in solutions
+
+b.
+NO, the expected output is not correct OK
+c.
+YES. WRONG, Invalid: rectangle 4, 1 is also allowed by the postcondition. So a valid test would expect 1,4 or 4,1 and test valid for both.
+d.
+YES.
+
+5.
+a.
+3) should be private, because we have getters that give the client everything they might want to know. 
+Solution: Make it private. OK
+8) This is returning a reference to the actual tetromino stored, which a client might unintentially alter. 
+Solution: Return a copy of the tetromino. OK
+
+WRONG
+11) returns an unmodifiable list, but the tetromino objects are still mutable parts of the rep.
+Solution: Should return defensive copies. 
+
+
+
+
+
+
+
+
