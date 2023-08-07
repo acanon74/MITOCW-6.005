@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
@@ -33,25 +34,49 @@ public abstract class GraphInstanceTest {
      * Test strategy:
      *
      * We test every method of the class against an empty and non-empty
-     * graph. We also, check whether they mutate the object.
+     * graph. We also, check whether they mutated the object.
      *
      * Breakdown of every test used:
      *
+     *
+     * testVerticesMethod()
+     *
+     * We instantiate TestGraph as empty and then add some labels to it, then we test whether the object was mutated.
+     *
+     *
      * testAddMethod()
      *
-     * EmptyGraph = empty graph
+     * We instantiate EmptyGraph, we will check addition in the following states:
+     * - When EmptyGraph is empty.
+     * - When EmptyGraph already contains some labels
+     * - Try to add() a pre-existing label, we should not modify and return false
      *
-     * Empty.
+     * In every step we check for mutability; whether the object was modified or not.
      *
      *
-     * TestGraph = nonempty graph
+     * testRemoveMethod()
+     *
+     * We instantiate TestGraph as empty. And add() some labels.
+     * To test the constructor we test whether we have initial edges.
+     *
+     * Giving the specification, we should test for the following inputs:
+     *
+     * - Add an edge connecting existing vertices.
+     * - Changing an edge connecting existing vertices.
+     * - Add an edge connecting missing vertices, creating the vertices and edge.
+     * - The input weight is zero, we delete the edge.
+     *
+     * In every case we check for mutability, whether the object was modified or not.
      *
      *
+     * testEmptySourcesTargetsMethods()
+     *
+     * We instantiate TestGraph as an empty Graph.
+     * We test sources() and targets() on the empty object, both of which should return and empty map.
      *
      */
 
 
-    
     /**
      * Overridden by implementation-specific test classes.
      * 
@@ -76,7 +101,7 @@ public abstract class GraphInstanceTest {
 
         Graph<String> TestGraph = emptyInstance();
 
-        Set<String> ExpectedVertices = new Set<String>;
+        HashSet<String> ExpectedVertices = new HashSet<String>();
 
         assertEquals(TestGraph.vertices(), Collections.emptySet());
 
@@ -94,9 +119,9 @@ public abstract class GraphInstanceTest {
         //Empty Graph
         Graph<String> EmptyGraph = emptyInstance();
 
-        assertEquals(EmptyGraph.add("NewLabel"), true);
+        assertTrue(EmptyGraph.add("NewLabel"));
 
-        Set<String> ExpectedEmptyAddition = new Set<String>;
+        HashSet<String> ExpectedEmptyAddition = new HashSet<String>();
         ExpectedEmptyAddition.add("NewLabel");
 
         assertEquals(EmptyGraph.vertices(), ExpectedEmptyAddition);
@@ -105,16 +130,16 @@ public abstract class GraphInstanceTest {
         Graph<String> NonEmptyGraph = emptyInstance();
         NonEmptyGraph.add("AlreadyInLabel");
 
-        assertEquals(NonEmptyGraph.add("Testlabel"), true);
+        assertTrue(NonEmptyGraph.add("TestLabel"));
 
-        Set<String> ExpectedAddition = new Set<String>;
+        HashSet<String> ExpectedAddition = new HashSet<String>();
         ExpectedAddition.add("AlreadyInLabel");
         ExpectedAddition.add("TestLabel");
 
         assertEquals(NonEmptyGraph.vertices(), ExpectedAddition);
 
         //If already in, return false
-        assertEquals(NonEmptyGraph.add("AlreadyInLabel"), false);
+        assertFalse(NonEmptyGraph.add("AlreadyInLabel"));
         //Check that it did not mutate the graph
         assertEquals(NonEmptyGraph.vertices(), ExpectedAddition);
     }
@@ -124,22 +149,22 @@ public abstract class GraphInstanceTest {
         //Empty Graph
         Graph<String> EmptyGraph = emptyInstance();
 
-        assertEquals(EmptyGraph.remove("MissingLabel"), false);
+        assertFalse(EmptyGraph.remove("MissingLabel"));
 
         //NonEmpty Graph
         Graph<String> NonEmptyGraph = emptyInstance();
         NonEmptyGraph.add("AlreadyInLabel");
         NonEmptyGraph.add("AnotherLabel");
 
-        assertEquals(NonEmptyGraph.remove("AlreadyInLabel"), true);
+        assertTrue(NonEmptyGraph.remove("AlreadyInLabel"));
 
-        Set<String> ExpectedAddition = new Set<String>;
+        HashSet<String> ExpectedAddition = new HashSet<String>();
         ExpectedAddition.add("AnotherLabel");
 
         assertEquals(NonEmptyGraph.vertices(), ExpectedAddition);
 
-        //If it doesnt contain it, return false
-        assertEquals(NonEmptyGraph.add("NotInGraph"), false);
+        //If it doesn't contain it, return false
+        assertFalse(NonEmptyGraph.add("NotInGraph"));
         //Check that it did not mutate the graph
         assertEquals(NonEmptyGraph.vertices(), ExpectedAddition);
 
@@ -149,7 +174,7 @@ public abstract class GraphInstanceTest {
     public void testSetSSourcesTargetsMethods() {
 
         //This method tests the set method. However, as a byproduct of testing whether it mutates the object,
-        //we also have a pretty good test of the sources and targets methods.
+        //we also have a pretty good test of the sources() and targets() methods.
 
         Graph<String> TestGraph = emptyInstance();
 
@@ -202,7 +227,7 @@ public abstract class GraphInstanceTest {
     }
 
     @Test
-    public void testEmptySourcesTargets() {
+    public void testEmptySourcesTargetsMethods() {
 
         Graph<String> TestGraph = emptyInstance();
 
