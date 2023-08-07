@@ -32,6 +32,35 @@ public class AlphabetGeneratorTest {
      * String[] trainingData2 = {"qqq", "ww", "ee", "r", "-*-"};
      * char[] expectedOutput2 = {'e','e','q','q','q','r','w','w'};
      *
+     * Here is the expected data for my own test above. You can uncomment the print statements for every step in the AlphabetGenerator.java file.
+     * total chars: 8
+     * q 3
+     * w 2
+     * e 2
+     * r 1
+     * - should be ignored, that is frequency 0 and calculations should remain as below
+     *
+     * pdf
+     * 0.375
+     * 0.25
+     * 0.25
+     * 0.125
+     *
+     * cdf
+     * 0.375
+     * 0.625
+     * 0.875
+     * 1
+     * multiplying
+     * 3
+     * 5
+     * 7
+     * 8
+     * [q,q,q,w,w,e,e,r]
+     * by lexico ordering
+     * [e,e,q,q,q,r,w,w]
+     *
+     *
      * This input data checks whether the weight are correct,
      * what happens if two characters have the same frequency,
      * whether the code ignores characters outside the a-z range "-*-".
@@ -52,36 +81,6 @@ public class AlphabetGeneratorTest {
 
         String[] trainingData2 = {"qqq", "ww", "ee", "r", "-*-"};
         char[] expectedOutput2 = {'e','e','q','q','q','r','w','w'};
-
-        /**
-         * Here is the expected data for my own test above. You can uncomment the print statements for every step in the AlphabetGenerator.java file.
-         * total chars: 8
-         * q 3
-         * w 2
-         * e 2
-         * r 1
-         * - should be ignored, that is frequency 0 and calculations should remain as below
-         *
-         * pdf
-         * 0.375
-         * 0.25
-         * 0.25
-         * 0.125
-         *
-         * cdf
-         * 0.375
-         * 0.625
-         * 0.875
-         * 1
-         * multiplying
-         * 3
-         * 5
-         * 7
-         * 8
-         * [q,q,q,w,w,e,e,r]
-         * by lexico ordering
-         * [e,e,q,q,q,r,w,w]
-         */
 
         assertArrayEquals(expectedOutput2,
                 AlphabetGenerator.generateFrequencyAlphabet(
