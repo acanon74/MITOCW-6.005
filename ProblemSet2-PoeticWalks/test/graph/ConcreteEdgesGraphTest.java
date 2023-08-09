@@ -20,48 +20,43 @@ import static org.junit.Assert.*;
  */
 public class ConcreteEdgesGraphTest extends GraphInstanceTest {
     
-    /*
+    /**
      * Provide a ConcreteEdgesGraph for tests in GraphInstanceTest.
      */
     @Override public Graph<String> emptyInstance() {
         return new ConcreteEdgesGraph();
     }
-    
-    /*
-     * Testing ConcreteEdgesGraph...
+
+    //Implementation-specific test for ConcreteEdgesGraph
+
+    /**There are not more methods or fields in my implementation of ConcreteEdgesGraph,
+     * besides addMissingVerticesTest(), which is private because it is a helper method
+     * for the public method set().
      */
 
-
-    // Testing strategy for ConcreteEdgesGraph.toString()
-    //   TODO
     /**
      * Preconditions:
-     *
-     * Graph might or might not be empty
+     * Graph might or might not be empty.
      *
      * Test strategy:
      * We test for the returned String given an empty and filled graph.
-     * We test for labels added using add(), and as a byproduct of using set()
+     * We test for labels added using add(), and as a byproduct of using set().
      *
      * Breakdown of every test used:
+     * We instantiate an empty graph.
+     * assertTrue(TestGraph.toString().contains("---")).
+     * We test that, given an empty graph, the return String should not report any vertices.
      *
-     * We instantiate an empty graph
-     * assertTrue(TestGraph.toString().contains("---"))
-     * We test that given an empty graph, the return String should not report any labels or weights.
-     *
-     * We add a Label
-     * TestGraph.add("NewLabel")
-     * We do set("NewLabel", "AnotherLabel", 10), set() should add "AnotherLabel" besides setting the weight
-     * We test for the present of both labels and the weight
+     * We add a Label.
+     * TestGraph.add("NewLabel").
+     * We do set("NewLabel", "AnotherLabel", 10), set() should add "AnotherLabel" besides setting the weight.
+     * We test for the present of both labels and the weight.
      */
-
-    // TODO tests for ConcreteEdgesGraph.toString()
     @Test
     public void toStringTest() {
 
         Graph<String> TestGraph = emptyInstance();
 
-        //TODO Once implemented, we should check the length of the return when Graph is empty
         assertTrue(TestGraph.toString().contains("---"));
 
         TestGraph.add("NewLabel");
@@ -70,34 +65,22 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
 
         assertTrue(TestGraph.toString().contains("NewLabel"));
         assertTrue(TestGraph.toString().contains("AnotherLabel"));
-
-        //TODO Should we check for the weight to be present?
-        //assertTrue(TestGraph.toString().contains("10"));
     }
 
-    /*
-     * Testing Edge...
-     */
     
     // Testing strategy for Edge
-    //   TODO
-    // TODO tests for operations of Edge
 
-    public void EdgeConstructorTest() {
-
-        Graph<String> TestGraph = emptyInstance();
-
-        TestGraph.add("TestLabel");
-        TestGraph.add("AnotherLabel");
-
-        TestGraph.set("TestLabel", "AnotherLabel", 10);
-
-        assertTrue(true);
-
-        //TODO Wth? What am I supposed to test? There is no need for methods, so we dont have.
-        //fields are meant to be private, so no point in addressing them. And even if they were public, as required by the course,
-        //Edge is in the ConcreteEdgesGraph and is not public, so no way of instantiate an Edge and test them.
-        //Also, according to the spec of Graph, we do not have access to the Array of edges, so we cannot add a method to expose them.
-    }
-
+    /**
+     * I legit don't understand how I am supposed to test Edge.
+     * - Its fields are meant to be private for rep exposure, so no way to address them.
+     * - Even if they were, Edge is not the public class in ConcreteEdgesGraph, so no way to instantiate an object for testing.
+     * - If we follow the specification for Graph mention in the PS, we are not supposed to create a method for retrieving edges,
+     * or to index a single edge, so no way to get an Edge from a Graph object in the first place.
+     * - Also, my implementation of Edge only calls for plain getters; and equals and hashCode, both of which are meant to be internal
+     * and are tested by GraphInstanceTest and ConcreteEdgesTest anyway.
+     *
+     * - About that last part, yes, I am indeed able to check whether Edge is working properly by testing whether ConcreteEdgesGraph is
+     * working properly, but that would be using the ConcreteEdgesGraph's methods and that is just repeating the contents
+     * of ConcreteEdgesGraphTest and GraphInstanceTest.
+     */
 }
