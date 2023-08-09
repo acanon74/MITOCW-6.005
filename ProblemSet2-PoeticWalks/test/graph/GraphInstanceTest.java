@@ -19,61 +19,59 @@ import org.junit.Test;
  * methods to this class, or change the spec of {@link #emptyInstance()}.
  * Your tests MUST only obtain Graph instances by calling emptyInstance().
  * Your tests MUST NOT refer to specific concrete implementations.
+ *
+ * PS: I did add the method utilMutabilityTest(), this was only to follow DRY. We could
+ * have done without but mindless code repetition goes against the course's teachings :D
  */
 public abstract class GraphInstanceTest {
     
     // Testing strategy
     /**
      * Preconditions:
-     * Labels type must be immutable
+     * Labels type must be immutable.
+     * Weight must be >= 1.
      *
      * Special cases:
-     *
-     * empty graph
+     * empty graph.
      *
      * Test strategy:
-     *
-     * We test every method of the class against an empty and non-empty
-     * graph. We also, check whether they mutated the object.
+     * We test every method of the class against an empty and non-empty graph.
+     * We also, check whether they mutated the object.
      *
      * Breakdown of every test used:
      *
-     *
      * testVerticesMethod()
-     *
      * We instantiate TestGraph as empty and then add some labels to it, then we test whether the object was mutated.
      *
-     *
      * testAddMethod()
-     *
      * We instantiate EmptyGraph, we will check addition in the following states:
      * - When EmptyGraph is empty.
-     * - When EmptyGraph already contains some labels
-     * - Try to add() a pre-existing label, we should not modify and return false
+     * - When EmptyGraph already contains some vertices.
+     * - Try to add() a pre-existing label, we should not modify and return false.
      *
-     * In every step we check for mutability; whether the object was modified or not.
-     *
+     * In every step we check whether the object was modified or not.
      *
      * testRemoveMethod()
-     *
      * We instantiate TestGraph as empty. And add() some labels.
      * To test the constructor we test whether we have initial edges.
+     *
      *
      * Giving the specification, we should test for the following inputs:
      *
      * - Add an edge connecting existing vertices.
      * - Changing an edge connecting existing vertices.
-     * - Add an edge connecting missing vertices, creating the vertices and edge.
-     * - The input weight is zero, we delete the edge.
+     * - Add an edge connecting missing vertices, therefore creating the vertices and edge.
+     * - The inputted weight is zero, we delete the edge.
      *
-     * In every case we check for mutability, whether the object was modified or not.
-     *
+     * In every case we check whether the object was modified or not.
      *
      * testEmptySourcesTargetsMethods()
-     *
      * We instantiate TestGraph as an empty Graph.
      * We test sources() and targets() on the empty object, both of which should return and empty map.
-     *
+     * We add an edge connecting existing vertices.
+     * We change an existent edge.
+     * We add an edge connecting missing vertices, we add such vertices.
+     * We set() using weight = 0. We delete the given edge.
      */
 
 
@@ -91,8 +89,7 @@ public abstract class GraphInstanceTest {
     
     @Test
     public void testInitialVerticesEmpty() {
-        // TODO you may use, change, or remove this test
-        assertEquals("expected new graph to have no vertices",
+        assertEquals("TEST INCLUDED IN COURSE: expected new graph to have no vertices",
                 Collections.emptySet(), emptyInstance().vertices());
     }
 
@@ -101,13 +98,13 @@ public abstract class GraphInstanceTest {
 
         Graph<String> TestGraph = emptyInstance();
 
-        HashSet<String> ExpectedVertices = new HashSet<String>();
-
         assertEquals(TestGraph.vertices(), Collections.emptySet());
+
+
+        HashSet<String> ExpectedVertices = new HashSet<String>();
 
         TestGraph.add("FirstLabel");
         TestGraph.add("SecondLabel");
-
         ExpectedVertices.add("FirstLabel");
         ExpectedVertices.add("SecondLabel");
 
@@ -124,7 +121,9 @@ public abstract class GraphInstanceTest {
         HashSet<String> ExpectedEmptyAddition = new HashSet<String>();
         ExpectedEmptyAddition.add("NewLabel");
 
+        //It added and mutated the object
         assertEquals(EmptyGraph.vertices(), ExpectedEmptyAddition);
+
 
         //NonEmpty Graph
         Graph<String> NonEmptyGraph = emptyInstance();
@@ -138,9 +137,10 @@ public abstract class GraphInstanceTest {
 
         assertEquals(NonEmptyGraph.vertices(), ExpectedAddition);
 
+
         //If already in, return false
         assertFalse(NonEmptyGraph.add("AlreadyInLabel"));
-        //Check that it did not mutate the graph
+        //Check that last test did not mutate the graph
         assertEquals(NonEmptyGraph.vertices(), ExpectedAddition);
     }
 
@@ -150,6 +150,7 @@ public abstract class GraphInstanceTest {
         Graph<String> EmptyGraph = emptyInstance();
 
         assertFalse(EmptyGraph.remove("MissingLabel"));
+
 
         //NonEmpty Graph
         Graph<String> NonEmptyGraph = emptyInstance();
@@ -161,13 +162,24 @@ public abstract class GraphInstanceTest {
         HashSet<String> ExpectedAddition = new HashSet<String>();
         ExpectedAddition.add("AnotherLabel");
 
+        //It removed and mutated the object
         assertEquals(NonEmptyGraph.vertices(), ExpectedAddition);
+
 
         //If it doesn't contain it, return false
-        assertFalse(NonEmptyGraph.add("NotInGraph"));
+        assertFalse(NonEmptyGraph.remove("NotInGraph"));
         //Check that it did not mutate the graph
         assertEquals(NonEmptyGraph.vertices(), ExpectedAddition);
+    }
 
+    static void utilMutabilityTest(Graph<String> graph, String source, String target, int weight){
+        HashMap<String, Integer> ExpectedSources = new HashMap<>();
+        ExpectedSources.put(source, weight);
+        assertEquals(graph.sources(target), ExpectedSources);
+
+        HashMap<String, Integer> ExpectedTargets = new HashMap<>();
+        ExpectedTargets.put(target, weight);
+        assertEquals(graph.targets(source), ExpectedTargets);
     }
 
     @Test
@@ -177,63 +189,31 @@ public abstract class GraphInstanceTest {
         //we also have a pretty good test of the sources() and targets() methods.
 
         Graph<String> TestGraph = emptyInstance();
-
         TestGraph.add("FirstLabel");
         TestGraph.add("SecondLabel");
 
         //Test that there are no edges
+        assertEquals(TestGraph.targets("FirstLabel"), Collections.emptyMap());
         assertEquals(TestGraph.sources("SecondLabel"), Collections.emptyMap());
 
-        //There is not such edge. source, target, weight
+        //Initially there is not such edge. We add it.
         assertEquals(TestGraph.set("FirstLabel", "SecondLabel", 10),0);
 
-        HashMap<String, Integer> ExpectedSources = new HashMap<String, Integer>();
-        ExpectedSources.put("FirstLabel", 10);
-        assertEquals(TestGraph.sources("SecondLabel"), ExpectedSources);
-
-        HashMap<String, Integer> ExpectedTargets = new HashMap<String, Integer>();
-        ExpectedTargets.put("SecondLabel", 10);
-        assertEquals(TestGraph.sources("FirstLabel"), ExpectedTargets);
+        utilMutabilityTest(TestGraph, "FirstLabel", "SecondLabel", 10);
 
         //There IS such an edge and we change it.
         assertEquals(TestGraph.set("FirstLabel", "SecondLabel", 4),10);
 
-        HashMap<String, Integer> ExpectedEditedSources = new HashMap<String, Integer>();
-        ExpectedEditedSources.put("FirstLabel", 4);
-        assertEquals(TestGraph.sources("SecondLabel"), ExpectedEditedSources);
-
-        HashMap<String, Integer> ExpectedEditedTargets = new HashMap<String, Integer>();
-        ExpectedEditedTargets.put("SecondLabel", 4);
-        assertEquals(TestGraph.sources("FirstLabel"), ExpectedEditedTargets);
+        utilMutabilityTest(TestGraph, "FirstLabel", "SecondLabel", 4);
 
         //There is not such vertices, we create them
         assertEquals(TestGraph.set("NewLabel", "AnotherLabel", 99),0);
 
-        HashMap<String, Integer> ExpectedCreatedSources = new HashMap<String, Integer>();
-        ExpectedCreatedSources.put("NewLabel", 99);
-        assertEquals(TestGraph.sources("AnotherLabel"), ExpectedCreatedSources);
-
-        HashMap<String, Integer> ExpectedCreatedTargets = new HashMap<String, Integer>();
-        ExpectedCreatedTargets.put("AnotherLabel", 99);
-        assertEquals(TestGraph.sources("NewLabel"), ExpectedCreatedTargets);
+        utilMutabilityTest(TestGraph, "NewLabel", "AnotherLabel", 99);
 
         //Weight is 0 so we delete the edge
         assertEquals(TestGraph.set("FirstLabel", "SecondLabel", 0),4);
-
         assertEquals(TestGraph.sources("SecondLabel"), Collections.emptyMap());
-
-        assertEquals(TestGraph.sources("FirstLabel"), Collections.emptyMap());
-
+        assertEquals(TestGraph.targets("FirstLabel"), Collections.emptyMap());
     }
-
-    @Test
-    public void testEmptySourcesTargetsMethods() {
-
-        Graph<String> TestGraph = emptyInstance();
-
-        assertEquals(TestGraph.sources("MissingLabel"), Collections.emptyMap());
-        assertEquals(TestGraph.targets("MissingLabel"), Collections.emptyMap());
-
-    }
-    
 }

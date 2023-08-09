@@ -3,86 +3,282 @@
  */
 package graph;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import java.util.*;
 /**
  * An implementation of Graph.
- * 
- * <p>PS2 instructions: you MUST use the provided rep.
  */
 public class ConcreteEdgesGraph implements Graph<String> {
-    
+    /**
+     * Abstraction function:
+     * Represents a graph; storing vertices in a HashSet, and edges as Edge stored in an ArrayList.
+     *
+     * Representation invariant:
+     * The labels are immutable types. We use String.
+     * an edge must connect to 2 existing vertices, which must be different.
+     * the weight of an edge must be >= 1.
+     *
+     * Safety from rep exposure:
+     * The labels are immutable types.
+     * the references of vertices and edges are immutable and private.
+     * Edge and its methods are immutable. Its methods are also private.
+     * vertices() returns a defensive copy.
+     */
+
     private final Set<String> vertices = new HashSet<>();
     private final List<Edge> edges = new ArrayList<>();
-    
-    // Abstraction function:
-    //   TODO
-    // Representation invariant:
-    //   TODO
-    // Safety from rep exposure:
-    //   TODO
-    
-    // TODO constructor
-    
-    // TODO checkRep
-    
+
+    public ConcreteEdgesGraph(){}
+
+    private void checkRep() {
+        for(Edge edge : edges) {
+            assert (!Objects.equals(edge.getSource(), edge.getTarget()));
+            assert (vertices.contains(edge.getSource()) && vertices.contains(edge.getTarget()));
+            assert (edge.getWeight() >= 1);
+        }
+    }
+
     @Override public boolean add(String vertex) {
-        throw new RuntimeException("not implemented");
+
+        if(!vertices.contains(vertex)) {
+            vertices.add(vertex);
+            checkRep();
+            return true;
+        } else {
+            checkRep();
+            return false;
+        }
     }
-    
+
+    /**
+     * Checks whether there are vertices with the given source and target labels.
+     * The method mutates the object by adding the missing labels,
+     * otherwise doesn't modify the vertices object.
+     *
+     * The method mutates the vertices object.
+     *
+     * @param source label to be checked for or added.
+     * @param target label to be checked for or added.
+     */
+    private void addMissingVertices(String source, String target) {
+        if(!vertices.contains(source)) {
+            vertices.add(source);
+        }
+        if(!vertices.contains(target)) {
+            vertices.add(target);
+        }
+        checkRep();
+    }
+
     @Override public int set(String source, String target, int weight) {
-        throw new RuntimeException("not implemented");
+
+        Edge keyObject = new Edge(source, target);
+        int indexSearch = edges.indexOf(keyObject);
+
+        if(weight >= 1) {
+
+            addMissingVertices(source, target);
+
+            //check for existence of edge
+            if(indexSearch != -1) {
+
+                Edge OriginalEdge = edges.get(indexSearch);
+                int originalWeight = OriginalEdge.getWeight();
+
+                edges.remove(keyObject);
+                edges.add(new Edge(source, target, weight));
+
+                checkRep();
+                return originalWeight;
+
+            } else {
+                edges.add(new Edge(source, target, weight));
+
+                checkRep();
+                return 0;
+            }
+
+        } else if(weight == 0) {
+
+            //check for existence of edge
+            if(indexSearch != 1) {
+
+                Edge OriginalEdge = edges.get(indexSearch);
+                int originalWeight = OriginalEdge.getWeight();
+
+                edges.remove(new Edge(source, target));
+
+                checkRep();
+                return originalWeight;
+
+            } else {
+                throw new RuntimeException("There is no such edge");
+            }
+        } else {
+            throw new RuntimeException("Weight must be non-negative");
+        }
     }
-    
+
     @Override public boolean remove(String vertex) {
-        throw new RuntimeException("not implemented");
+
+        boolean existenceVertex = vertices.remove(vertex);
+        //if vertex existed, check and remove edges
+        if(existenceVertex) {
+
+            for(Edge pair : edges) {
+                if((pair.getSource() == vertex) || (pair.getTarget() == vertex)) {
+                    edges.remove(pair);
+                }
+            }
+        }
+        checkRep();
+        return existenceVertex;
     }
     
     @Override public Set<String> vertices() {
-        throw new RuntimeException("not implemented");
+        return Set.copyOf(vertices);
     }
     
     @Override public Map<String, Integer> sources(String target) {
-        throw new RuntimeException("not implemented");
+
+        HashMap<String, Integer> foundEdges = new HashMap<>();
+
+        for(Edge edge : edges) {
+
+            if(edge.getTarget() == target) {
+                foundEdges.put(edge.getSource(), edge.getWeight());
+            }
+        }
+        checkRep();
+        return foundEdges;
     }
     
     @Override public Map<String, Integer> targets(String source) {
-        throw new RuntimeException("not implemented");
+
+        HashMap<String, Integer> foundEdges = new HashMap<>();
+
+        for(Edge edge : edges) {
+
+            if(edge.getSource() == source) {
+                foundEdges.put(edge.getTarget(), edge.getWeight());
+            }
+        }
+        checkRep();
+        return foundEdges;
     }
-    
-    // TODO toString()
-    
+
+    @Override
+    public String toString() {
+        return (vertices.toString() + " --- " + edges.toString());
+    }
 }
 
 /**
- * TODO specification
- * Immutable.
- * This class is internal to the rep of ConcreteEdgesGraph.
- * 
- * <p>PS2 instructions: the specification and implementation of this class is
- * up to you.
+ * Given source, target and weight, Edge represents a triplet that contains the given parameters. Edge is immutable.
+ * source and target are stored in a PairString object for hashing and indexing purposes.
+ *
+ * @param source The label corresponding to the source vertex
+ * @param target The label corresponding to the target vertex
+ * @param weight The weight of the edge, must be >= 1
+ *
+ * Read <a href="https://en.wikipedia.org/wiki/Directed_graph">...</a>
+ * @return An immutable triplet containing the source, target and weight.
  */
 class Edge {
-    
-    // TODO fields
-    
-    // Abstraction function:
-    //   TODO
-    // Representation invariant:
-    //   TODO
-    // Safety from rep exposure:
-    //   TODO
-    
-    // TODO constructor
-    
-    // TODO checkRep
-    
-    // TODO methods
-    
-    // TODO toString()
-    
+
+    private final PairString connectedVertices;
+    private final int weight;
+
+    /**
+     * Abstraction function:
+     * represents the triplet (source, target, weight).
+     *
+     * Representation invariant:
+     * source and target must be different vertices.
+     * weight must be an integer >= 1.
+     *
+     * Safety from rep exposure:
+     * PairString, which contains source and target, is private and immutable.
+     * weight is private and immutable.
+     * */
+
+    public Edge(String source, String target){
+        weight = 1;
+
+        if(source != target) {
+            connectedVertices = new PairString(source, target);
+        } else {
+            throw new RuntimeException("source and target vertices must be different");
+        }
+        checkRep();
+    }
+
+    public Edge(String source, String target, int weight) {
+
+        if(weight >= 1) {
+            this.weight = weight;
+        } else {
+            throw new RuntimeException("weight must be >= 1");
+        }
+
+        if(source != target) {
+            connectedVertices = new PairString(source, target);
+        } else {
+            throw new RuntimeException("source and target vertices must be different");
+        }
+        checkRep();
+    }
+
+    private void checkRep(){
+        assert !Objects.equals(this.getSource(), this.getTarget());
+        assert this.weight >= 1;
+    }
+
+    public String getSource(){
+        return (String) connectedVertices.a;
+    }
+    public String getTarget(){
+        return (String) connectedVertices.b;
+    }
+    public int getWeight(){
+        return this.weight;
+    }
+
+    public String toString() {
+        return "(" + this.getSource() + "," + this.getTarget() + "," + this.getWeight() + ")";
+    }
+
+    /**
+     * We check that the objects are of the sane type, and finally that their connectedVertices fields have the
+     * same source, target data.
+     *
+     * @param obj Another Edge object to compare connectedVertices
+     * @return whether the field connectedVertices reports the same hash as the obj
+     */
+    @Override
+    public boolean equals(Object obj){
+
+        if(obj == null) {
+            return false;
+        }
+
+        if(obj.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final Edge other = (Edge) obj;
+        return this.connectedVertices.equals(other.connectedVertices);
+    }
+
+    /**
+     * Due to how ConcreteEdgesGraph.set() works, which replaces weight if there is a
+     * pre-existing edge and adds it otherwise, we must not include weight in our hash function in order to index
+     * Edges based on their connected vertices only.
+     * Therefore, we index an Edge object based on the hash of its PairString, which hashes the pair (source, target).
+     *
+     * @return the hash corresponding to the PairString of the Edge object.
+     */
+    @Override
+    public int hashCode(){
+        return connectedVertices.hashCode();
+    }
 }
