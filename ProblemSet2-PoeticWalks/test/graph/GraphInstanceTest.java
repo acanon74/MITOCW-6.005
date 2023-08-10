@@ -211,8 +211,21 @@ public abstract class GraphInstanceTest {
 
         utilMutabilityTest(TestGraph, "NewLabel", "AnotherLabel", 99);
 
+        //Create an Edge between a used vertex and a free vertex.
+        assertEquals(TestGraph.set("FirstLabel", "NewLabel", 2), 0);
+
+        HashMap<String, Integer> ExpectedSources = new HashMap<>();
+        ExpectedSources.put("FirstLabel", 2);
+        assertEquals(TestGraph.sources("NewLabel"), ExpectedSources);
+
+        HashMap<String, Integer> ExpectedTargets = new HashMap<>();
+        ExpectedTargets.put("SecondLabel", 4);
+        ExpectedTargets.put("NewLabel", 2);
+        assertEquals(TestGraph.targets("FirstLabel"), ExpectedTargets);
+
         //Weight is 0 so we delete the edge
         assertEquals(TestGraph.set("FirstLabel", "SecondLabel", 0),4);
+        assertEquals(TestGraph.set("FirstLabel", "NewLabel", 0),2);
         assertEquals(TestGraph.sources("SecondLabel"), Collections.emptyMap());
         assertEquals(TestGraph.targets("FirstLabel"), Collections.emptyMap());
     }

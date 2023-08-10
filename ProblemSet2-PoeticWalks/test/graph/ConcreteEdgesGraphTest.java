@@ -1,7 +1,7 @@
 /* Copyright (c) 2015-2016 MIT 6.005 course staff, all rights reserved.
  * Redistribution of original or derived work requires permission of course staff.
  */
-package test.graph;
+package graph;
 
 import graph.ConcreteEdgesGraph;
 import graph.Graph;
@@ -67,20 +67,132 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
         assertTrue(TestGraph.toString().contains("AnotherLabel"));
     }
 
-    
-    // Testing strategy for Edge
-
     /**
-     * I legit don't understand how I am supposed to test Edge.
-     * - Its fields are meant to be private for rep exposure, so no way to address them.
-     * - Even if they were, Edge is not the public class in ConcreteEdgesGraph, so no way to instantiate an object for testing.
-     * - If we follow the specification for Graph mention in the PS, we are not supposed to create a method for retrieving edges,
-     * or to index a single edge, so no way to get an Edge from a Graph object in the first place.
-     * - Also, my implementation of Edge only calls for plain getters; and equals and hashCode, both of which are meant to be internal
-     * and are tested by GraphInstanceTest and ConcreteEdgesTest anyway.
+     * Preconditions:
+     * source and target vertices must be different.
+     * weight must be >= 1.
      *
-     * - About that last part, yes, I am indeed able to check whether Edge is working properly by testing whether ConcreteEdgesGraph is
-     * working properly, but that would be using the ConcreteEdgesGraph's methods and that is just repeating the contents
-     * of ConcreteEdgesGraphTest and GraphInstanceTest.
+     * Test strategy:
+     * We test the behavior of every method of the class Edge.
+     *
+     * Breakdown of every test used:
+     *
+     * edgeConstructorTest()
+     * We test the constructor without the weight parameter.
+     * We test the constructor with the weight parameter.
+     *
+     * We use the getters to check the values.
+     *
+     * edgeGetSource()
+     * We test the getSource() method in Edge constructed with and without the weight parameter.
+     *
+     * edgeGetTarget()
+     * We test the getTarget() method in Edge constructed with and without the weight parameter.
+     *
+     * edgeGetWeight()
+     * We test the getWeight() method in Edge constructed with and without the weight parameter.
+     *
+     * edgeToString()
+     * We use both constructors and test for specific outputs given certain vertices.
+     *
+     * edgeEquals()
+     * We test that the equals() method is independent of the weight field. As long as
+     * the source and target vertices do coincide.
+     * We test both constructors.
+     *
+     * edgeHashCode()
+     * We test that the hashCode() method is independent of the weight field. As long as
+     * the source and target vertices do coincide.
+     * We test both constructors.
      */
+
+    @Test
+    public void edgeConstructorTest() {
+        ConcreteEdgesGraph.Edge EdgeNoWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel");
+
+        assertEquals(EdgeNoWeight.getSource(), "SourceLabel");
+        assertEquals(EdgeNoWeight.getTarget(), "TargetLabel");
+        assertEquals(EdgeNoWeight.getWeight(), 1);
+
+
+        ConcreteEdgesGraph.Edge EdgeWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel", 99);
+
+        assertEquals(EdgeWeight.getSource(), "SourceLabel");
+        assertEquals(EdgeWeight.getTarget(), "TargetLabel");
+        assertEquals(EdgeWeight.getWeight(), 99);
+    }
+
+    @Test
+    public void edgeGetSource() {
+        ConcreteEdgesGraph.Edge EdgeNoWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel");
+        assertEquals(EdgeNoWeight.getSource(), "SourceLabel");
+
+        ConcreteEdgesGraph.Edge EdgeWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel", 99);
+        assertEquals(EdgeWeight.getSource(), "SourceLabel");
+    }
+
+    @Test
+    public void edgeGetTarget() {
+        ConcreteEdgesGraph.Edge EdgeNoWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel");
+        assertEquals(EdgeNoWeight.getTarget(), "TargetLabel");
+
+        ConcreteEdgesGraph.Edge EdgeWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel", 99);
+        assertEquals(EdgeWeight.getTarget(), "TargetLabel");
+    }
+
+    @Test
+    public void edgeGetWeight() {
+        ConcreteEdgesGraph.Edge EdgeNoWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel");
+        assertEquals(EdgeNoWeight.getWeight(), 1);
+
+        ConcreteEdgesGraph.Edge EdgeWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel", 99);
+        assertEquals(EdgeWeight.getWeight(), 99);
+    }
+
+    @Test
+    public void edgeToString() {
+        ConcreteEdgesGraph.Edge EdgeNoWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel");
+        assertEquals(EdgeNoWeight.toString(), "(SourceLabel-->TargetLabel,1)");
+
+
+        ConcreteEdgesGraph.Edge EdgeWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel", 99);
+        assertEquals(EdgeWeight.toString(), "(SourceLabel-->TargetLabel,99)");
+
+    }
+
+    @Test
+    public void edgeEquals() {
+        ConcreteEdgesGraph.Edge EdgeNoWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel");
+        ConcreteEdgesGraph.Edge EqualEdgeNoWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel");
+        ConcreteEdgesGraph.Edge DiffEdgeNoWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "DifferentLabel");
+
+        assertTrue(EdgeNoWeight.equals(EqualEdgeNoWeight));
+        assertFalse(EdgeNoWeight.equals(DiffEdgeNoWeight));
+
+
+        ConcreteEdgesGraph.Edge EdgeWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel");
+        ConcreteEdgesGraph.Edge EqualEdgeWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel");
+        ConcreteEdgesGraph.Edge DiffEdgeWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "DifferentLabel");
+
+        assertTrue(EdgeWeight.equals(EqualEdgeWeight));
+        assertFalse(EdgeWeight.equals(DiffEdgeWeight));
+    }
+
+    @Test
+    public void edgeHashCode() {
+        ConcreteEdgesGraph.Edge EdgeNoWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel");
+        ConcreteEdgesGraph.Edge EqualEdgeNoWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel");
+        ConcreteEdgesGraph.Edge DiffEdgeNoWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "DifferentLabel");
+
+        assertTrue(EdgeNoWeight.hashCode() == EqualEdgeNoWeight.hashCode());
+        assertFalse(EdgeNoWeight.hashCode() == DiffEdgeNoWeight.hashCode());
+
+
+        ConcreteEdgesGraph.Edge EdgeWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel", 99);
+        ConcreteEdgesGraph.Edge EqualEdgeWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "TargetLabel", 99);
+        ConcreteEdgesGraph.Edge DiffEdgeWeight = new ConcreteEdgesGraph.Edge("SourceLabel", "DifferentLabel", 99);
+
+        assertTrue(EdgeWeight.hashCode() == EqualEdgeWeight.hashCode());
+        assertFalse(EdgeWeight.hashCode() == DiffEdgeWeight.hashCode());
+    }
 }

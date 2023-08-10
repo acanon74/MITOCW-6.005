@@ -56,7 +56,7 @@ public class PairString<String> {
 
         final PairString other = (PairString) obj;
 
-        return (this.a == other.a && this.b == other.b);
+        return ((this.a == other.a) && (this.b == other.b));
     }
 
     /**
@@ -68,7 +68,7 @@ public class PairString<String> {
      */
     @Override
     public int hashCode() {
-        String beforeHash = (String) (a + " " + b);
+        String beforeHash = (String) (a + "-" + b);
         return beforeHash.hashCode();
     }
 }
