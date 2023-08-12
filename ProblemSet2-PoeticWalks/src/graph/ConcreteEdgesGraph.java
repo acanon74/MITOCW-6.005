@@ -225,18 +225,21 @@ public class ConcreteEdgesGraph implements Graph<String> {
 
     @Override public boolean remove(String vertex) {
 
-        boolean existenceVertex = vertices.remove(vertex);
+        boolean wasInside = vertices.contains(vertex);
         //if vertex existed, check and remove edges
-        if(existenceVertex) {
+        if(wasInside) {
 
-            for(Edge pair : edges) {
-                if((pair.getSource() == vertex) || (pair.getTarget() == vertex)) {
+            List<Edge> copyEdges = new ArrayList<>(edges);
+
+            for(Edge pair : copyEdges) {
+                if((Objects.equals(pair.getSource(), vertex)) || (Objects.equals(pair.getTarget(), vertex))) {
                     edges.remove(pair);
                 }
             }
+            vertices.remove(vertex);
         }
         checkRep();
-        return existenceVertex;
+        return wasInside;
     }
     
     @Override public Set<String> vertices() {

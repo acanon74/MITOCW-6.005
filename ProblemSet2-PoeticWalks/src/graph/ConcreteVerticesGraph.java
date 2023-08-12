@@ -123,7 +123,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * @return A Map containing shallow deep copies of sourcesMap.
          */
         //TODO this method doing a shallow copy breaks rep exposure, we must implement deep copy.
-        public Map<Vertex, Integer> getSources() {
+        Map<Vertex, Integer> getSources() {
             HashMap<Vertex, Integer> copyOfSources = new HashMap<>();
             copyOfSources.putAll(sourcesMap);
             return copyOfSources;
@@ -135,7 +135,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * @return A Map containing shallow deep copies of targetsMap.
          */
         //TODO this method doing a shallow copy breaks rep exposure, we must implement deep copy.
-        public Map<Vertex, Integer> getTargets() {
+        Map<Vertex, Integer> getTargets() {
             HashMap<Vertex, Integer> copyOfTargets = new HashMap<>();
             copyOfTargets.putAll(targetsMap);
             return copyOfTargets;
@@ -402,12 +402,17 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
         int vertexIndex = vertices.indexOf(new Vertex(vertex));
 
-        if(vertexIndex != -1) {
 
-            for (Vertex connected : vertices.get(vertexIndex).getConnectedVertices().keySet()) {
-                int connectedIndex = vertices.indexOf(connected);
-                vertices.remove(connectedIndex);
+        if(vertexIndex != -1) {
+            Vertex vertexObject = vertices.get(vertexIndex);
+
+            for(Vertex source : vertexObject.getSources().keySet()) {
+                source.setEdge(vertexObject, 0);
             }
+            for(Vertex target : vertexObject.getTargets().keySet()) {
+                vertexObject.setEdge(target, 0);
+            }
+
             vertices.remove(vertexIndex);
             checkRep();
             return true;

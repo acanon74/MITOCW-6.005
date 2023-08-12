@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
-
+//TODO getTargets and getSources must have package access
 /**
  * Tests for instance methods of Graph.
  * 
@@ -173,13 +173,16 @@ public abstract class GraphInstanceTest {
     }
 
     static void utilMutabilityTest(Graph<String> graph, String source, String target, int weight){
-        HashMap<String, Integer> ExpectedSources = new HashMap<>();
-        ExpectedSources.put(source, weight);
-        //assertEquals(ExpectedSources, graph.sources(target));
 
-        HashMap<String, Integer> ExpectedTargets = new HashMap<>();
-        ExpectedTargets.put(target, weight);
-        assertEquals(ExpectedTargets, graph.targets(source));
+        if(weight != 0) {
+            HashMap<String, Integer> ExpectedSources = new HashMap<>();
+            ExpectedSources.put(source, weight);
+            assertEquals(ExpectedSources, graph.sources(target));
+
+            HashMap<String, Integer> ExpectedTargets = new HashMap<>();
+            ExpectedTargets.put(target, weight);
+            assertEquals(ExpectedTargets, graph.targets(source));
+        }
     }
 
     @Test
@@ -229,5 +232,80 @@ public abstract class GraphInstanceTest {
         assertEquals(TestGraph.set("FirstLabel", "NewLabel", 0),2);
         assertEquals(TestGraph.sources("SecondLabel"), Collections.emptyMap());
         assertEquals(TestGraph.targets("FirstLabel"), Collections.emptyMap());
+    }
+    @Test
+    public void testSelfMutualReference() {
+
+        //Test a bilateral reference. this points to that and that points to this.
+        Graph<String> testGraph = emptyInstance();
+        testGraph.add("FirstLabel");
+        testGraph.add("SecondLabel");
+
+        testGraph.set("FirstLabel", "SecondLabel", 1);
+        testGraph.set("SecondLabel", "FirstLabel", 1);
+
+        utilMutabilityTest(testGraph, "FirstLabel", "SecondLabel", 1);
+
+        testGraph.remove("FirstLabel");
+
+        Set<String> expectedOutput = new HashSet<>();
+        expectedOutput.add("SecondLabel");
+
+        assertEquals(expectedOutput, testGraph.vertices());
+
+        //Test a cyclic reference. A cycle of 3 Vertex.
+        Graph<String> cycleGraph = emptyInstance();
+        cycleGraph.add("FirstLabel");
+        cycleGraph.add("SecondLabel");
+        cycleGraph.add("ThirdLabel");
+
+        cycleGraph.set("FirstLabel", "SecondLabel", 1);
+        cycleGraph.set("SecondLabel", "ThirdLabel", 1);
+        cycleGraph.set("ThirdLabel", "FirstLabel", 1);
+
+        utilMutabilityTest(cycleGraph, "FirstLabel", "SecondLabel", 1);
+        utilMutabilityTest(cycleGraph, "SecondLabel", "ThirdLabel", 1);
+        utilMutabilityTest(cycleGraph, "ThirdLabel", "FirstLabel", 1);
+
+        cycleGraph.remove("FirstLabel");
+        cycleGraph.remove("SecondLabel");
+        cycleGraph.remove("ThirdLabel");
+
+        assertEquals(Collections.emptySet(), cycleGraph.vertices());
+    }
+
+    @Test
+    public void testMultipleEdges() {
+
+        Graph<String> testGraph = emptyInstance();
+        String firstLabel = "FirstLabel";
+        testGraph.add("FirstLabel");
+        String secondLabel = "SecondLabel";
+        testGraph.add("SecondLabel");
+        String thirdLabel = "ThirdLabel";
+        testGraph.add("ThirdLabel");
+        String fourthLabel = "FourthLabel";
+        testGraph.add("FourthLabel");
+
+        testGraph.set(firstLabel, secondLabel, 1);
+        testGraph.set(firstLabel, thirdLabel, 2);
+        testGraph.set(firstLabel, fourthLabel, 3);
+
+        testGraph.set(fourthLabel, firstLabel, 5);
+        testGraph.set(fourthLabel, secondLabel, 6);
+        testGraph.set(fourthLabel, thirdLabel, 7);
+
+        testGraph.remove(firstLabel);
+
+        utilMutabilityTest(testGraph, firstLabel, secondLabel, 0);
+        utilMutabilityTest(testGraph, firstLabel, thirdLabel, 0);
+        utilMutabilityTest(testGraph, firstLabel, fourthLabel, 0);
+
+        Set<String> expectedOutput = new HashSet<>();
+        expectedOutput.add(secondLabel);
+        expectedOutput.add(thirdLabel);
+        expectedOutput.add(fourthLabel);
+
+        assertEquals(expectedOutput, testGraph.vertices());
     }
 }

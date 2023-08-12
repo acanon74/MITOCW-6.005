@@ -94,5 +94,4 @@ public interface Graph<L> {
      *         source to the key
      */
     public Map<L, Integer> targets(L source);
-    
 }
