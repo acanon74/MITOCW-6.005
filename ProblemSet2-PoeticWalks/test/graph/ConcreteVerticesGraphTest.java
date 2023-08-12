@@ -43,6 +43,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     //TODO ConcreteVerticesGraph methods
 
     // TODO tests for ConcreteVerticesGraph.toString()
+    //TODO interchange expected and actual values in the test for ConcreteEdgesGraph.
     @Test
     public void toStringTest() {
 
@@ -53,8 +54,6 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         TestGraph.add("NewLabel");
 
         TestGraph.set("NewLabel", "AnotherLabel", 10);
-
-        System.out.println(TestGraph.toString());
 
         assertTrue(TestGraph.toString().contains("NewLabel"));
         assertTrue(TestGraph.toString().contains("AnotherLabel"));

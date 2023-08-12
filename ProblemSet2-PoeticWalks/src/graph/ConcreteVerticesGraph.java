@@ -77,7 +77,9 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * All fields are private and final.
          * getConnectedVertices() returns a defensive copy.
          */
-
+        //TODO tests and documentation for the getSources and getTargets method. These methods should implement deep copies but 
+        // we will not do that.
+        
         public Vertex(String label) {
             this.label = label;
             checkRep();
@@ -114,6 +116,31 @@ public class ConcreteVerticesGraph implements Graph<String> {
             copyOfVertices.putAll(targetsMap);
             return copyOfVertices;
         }
+
+        /**
+         * Instantiates a HashMap containing shallow copies of sourcesMap and returns it.
+         *
+         * @return A Map containing shallow deep copies of sourcesMap.
+         */
+        //TODO this method doing a shallow copy breaks rep exposure, we must implement deep copy.
+        public Map<Vertex, Integer> getSources() {
+            HashMap<Vertex, Integer> copyOfSources = new HashMap<>();
+            copyOfSources.putAll(sourcesMap);
+            return copyOfSources;
+        }
+
+        /**
+         * Instantiates a HashMap containing shallow copies of targetsMap and returns it.
+         *
+         * @return A Map containing shallow deep copies of targetsMap.
+         */
+        //TODO this method doing a shallow copy breaks rep exposure, we must implement deep copy.
+        public Map<Vertex, Integer> getTargets() {
+            HashMap<Vertex, Integer> copyOfTargets = new HashMap<>();
+            copyOfTargets.putAll(targetsMap);
+            return copyOfTargets;
+        }
+        
 
 
         /**
@@ -332,21 +359,35 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
 
     @Override public boolean add(String vertex) {
-        return vertices.add(new Vertex(vertex));
+
+
+        boolean wasInside = vertices.contains(new Vertex(vertex));
+
+        if(wasInside) {
+            return false;
+        } else {
+            vertices.add(new Vertex(vertex));
+            return true;
+        }
+
     }
 
 
-    @Override public int set(String source, String target, int weight) {
+    @Override
+    public int set(String source, String target, int weight) {
 
-        int sourceIndex = vertices.indexOf(source);
-        int targetIndex = vertices.indexOf(target);
+        int sourceIndex = vertices.indexOf(new Vertex(source));
+        int targetIndex = vertices.indexOf(new Vertex(target));
 
         if(sourceIndex == -1) {
-            vertices.add(new Vertex(source));
+            this.add(source);
         }
         if(targetIndex == -1) {
-            vertices.add(new Vertex(target));
+            this.add(target);
         }
+
+        sourceIndex = vertices.indexOf(new Vertex(source));
+        targetIndex = vertices.indexOf(new Vertex(target));
 
         Vertex sourceVertex = vertices.get(sourceIndex);
         Vertex targetVertex = vertices.get(targetIndex);
@@ -356,25 +397,107 @@ public class ConcreteVerticesGraph implements Graph<String> {
         return originalWeight;
     }
     
-    @Override public boolean remove(String vertex) {
-        throw new RuntimeException("not implemented");
+    @Override
+    public boolean remove(String vertex) {
+
+        int vertexIndex = vertices.indexOf(new Vertex(vertex));
+
+        if(vertexIndex != -1) {
+
+            for (Vertex connected : vertices.get(vertexIndex).getConnectedVertices().keySet()) {
+                int connectedIndex = vertices.indexOf(connected);
+                vertices.remove(connectedIndex);
+            }
+            vertices.remove(vertexIndex);
+            checkRep();
+            return true;
+        } else {
+            checkRep();
+            return false;
+        }
     }
     
-    @Override public Set<String> vertices() {
-        throw new RuntimeException("not implemented");
+    @Override
+    public Set<String> vertices() {
+
+        Set<String> result = new HashSet<>();
+        for(Vertex vertex : vertices) {
+            result.add(vertex.getLabel());
+        }
+        return result;
     }
     
-    @Override public Map<String, Integer> sources(String target) {
-        throw new RuntimeException("not implemented");
+    @Override
+    public Map<String, Integer> sources(String target) {
+
+        int targetIndex = vertices.indexOf(new Vertex(target));
+        Vertex targetVertex = vertices.get(targetIndex);
+        Map<String, Integer> result = new HashMap<>();
+
+        for(Map.Entry<Vertex, Integer> entry : targetVertex.getSources().entrySet()) {
+            result.put(entry.getKey().getLabel(), entry.getValue());
+        }
+        return result;
     }
-    
+
     @Override public Map<String, Integer> targets(String source) {
-        throw new RuntimeException("not implemented");
+
+        int sourceIndex = vertices.indexOf(new Vertex(source));
+        Vertex sourceVertex = vertices.get(sourceIndex);
+        Map<String, Integer> result = new HashMap<>();
+
+        for(Map.Entry<Vertex, Integer> entry : sourceVertex.getTargets().entrySet()) {
+            result.put(entry.getKey().getLabel(), entry.getValue());
+        }
+        return result;
     }
     
     // TODO toString()
-    @Override public String toString() {
-        throw new RuntimeException("not implemented");
+
+    /**
+     *     public void toStringTest() {
+     *
+     *         Graph<String> TestGraph = emptyInstance();
+     *
+     *         assertTrue(TestGraph.toString().contains("---"));
+     *
+     *         TestGraph.add("NewLabel");
+     *
+     *         TestGraph.set("NewLabel", "AnotherLabel", 10);
+     *
+     *         System.out.println(TestGraph.toString());
+     *
+     *         assertTrue(TestGraph.toString().contains("NewLabel"));
+     *         assertTrue(TestGraph.toString().contains("AnotherLabel"));
+     *     }
+     *
+     */
+    //TODO edges method documentations and testing
+
+    public List<String> getEdges() {
+
+        HashSet<String> uniqueEdges = new HashSet<>();
+        //Build edges
+        for(Vertex vertex : vertices) {
+            //build targets
+            for(Map.Entry<Vertex, Integer> entry : vertex.getTargets().entrySet()) {
+                String targetLabel = entry.getKey().getLabel();
+                int edgeWeight = entry.getValue();
+                uniqueEdges.add("(" + vertex.getLabel() + "-->" + targetLabel + ", " + edgeWeight + ")");
+            }
+            //build sources
+            for(Map.Entry<Vertex, Integer> entry : vertex.getSources().entrySet()) {
+                String sourceLabel = entry.getKey().getLabel();
+                int edgeWeight = entry.getValue();
+                uniqueEdges.add("(" + vertex.getLabel() + "-->" + sourceLabel + ", " + edgeWeight + ")");
+            }
+        }
+        return new ArrayList<>(uniqueEdges);
+    }
+
+    @Override
+    public String toString() {
+        return this.vertices().toString() + " --- " + this.getEdges().toString();
     }
     
 }
