@@ -34,7 +34,8 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
      * for the public method set().
      */
 
-    /**
+    /**ConcreteEdgesGraph Tests
+     *
      * Preconditions:
      * Graph might or might not be empty.
      *
@@ -67,13 +68,15 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
         assertTrue(TestGraph.toString().contains("AnotherLabel"));
     }
 
-    /**
+    /**Edge Tests
+     *
      * Preconditions:
      * source and target vertices must be different.
      * weight must be >= 1.
      *
      * Test strategy:
-     * We test the behavior of every method of the class Edge.
+     * We test the behavior of every method of the class Edge. Using objects
+     * constructed with and without the weight parameter.
      *
      * Breakdown of every test used:
      *
