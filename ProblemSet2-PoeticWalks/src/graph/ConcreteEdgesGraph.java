@@ -14,14 +14,14 @@ public class ConcreteEdgesGraph implements Graph<String> {
      *
      * Representation invariant:
      * The labels are immutable types. We use String.
-     * an edge must connect to 2 existing vertices, which must be different.
+     * An Edge must connect to 2 existing vertices, which must be different.
      * the weight of an edge must be >= 1.
      *
      * Safety from rep exposure:
      * The labels are immutable types.
      * the references of vertices and edges are immutable and private.
      * Edge and its methods are immutable. Its methods are also private.
-     * vertices() returns a defensive copy.
+     * vertices() returns a defensive shallow copy.
      */
 
 

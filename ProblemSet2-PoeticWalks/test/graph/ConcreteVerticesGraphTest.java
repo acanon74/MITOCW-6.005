@@ -2,19 +2,19 @@
  * Redistribution of original or derived work requires permission of course staff.
  */
 package graph;
-import graph.ConcreteVerticesGraph;
-import graph.Graph;
-import graph.GraphInstanceTest;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import poet.Main;
 
-import java.awt.geom.NoninvertibleTransformException;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+
+import graph.ConcreteEdgesGraph;
+import graph.Graph;
+import graph.GraphInstanceTest;
 
 /**
  * Tests for ConcreteVerticesGraph.
@@ -37,13 +37,11 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
      * Testing ConcreteVerticesGraph...
      */
 
-    /**
-     * Only graph methods? for now at least...
+    /**There are not more methods or fields in my implementation of ConcreteVerticesGraph,
+     * besides getEdges(), which is private because it is a helper method
+     * for the public method toString();
      */
-    //TODO ConcreteVerticesGraph methods
 
-    // TODO tests for ConcreteVerticesGraph.toString()
-    //TODO interchange expected and actual values in the test for ConcreteEdgesGraph.
     @Test
     public void toStringTest() {
 
@@ -59,13 +57,10 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         assertTrue(TestGraph.toString().contains("AnotherLabel"));
     }
 
-
     /*
      * Testing Vertex...
      */
-    
-    // Testing strategy for Vertex
-    //   TODO
+
     /**Vertex Tests
      *
      * Preconditions:
@@ -75,62 +70,101 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
      * weight >= 1.
      *
      * Test strategy:
+     *
+     *
      * Breakdown of every test used:
      *
-     * VertexGetLabel()
+     * VertexGetLabelTest()
      * We instantiate an object using constructors, then we check for the
      * correctness of the label.
      *
-     * VertexGetConnectedVertices()
+     * VertexGetConnectedVerticesTest()
      * We instantiate a main object. We add some Edge objects, with
      * the main object acting both as source and as target.
      * We check that all the objects report their connections properly.
      *
-     * VertexIsSourceOf()
+     * SetEdgeTest()
+     * We test setting an Edge with and without the weight parameter.
+     * The method must change the edge's weight if weight >= 1. And
+     * delete the edge if weight = 0.
+     *
+     * VertexIsSourceOfTest()
      * We instantiate a main object. We add some Edge objects, with
      * the main object acting both as source and as target.
      * We test that the main object is source only of those object for which
      * it is a source and not target.
      * It should be a source of a missing vertex.
      *
-     * VertexIsTargetOf()
+     * VertexIsTargetOfTest()
      * We instantiate a main object. We add some Edge objects, with
      * the main object acting both as source and as target.
      * We test that the main object is target only of those object for which
      * it is a target and not source.
      * It should be a target of a missing vertex.
      *
-     * VertexHasEdgeWith()
+     * VertexHasEdgeWithTest()
      * We instantiate a main object. We add some Edge objects, with
      * the main object acting both as source and as target.
      * We test that the main object reports as connected to all the vertices.
      * We test that it reports not connected with non-connected vertices.
      * Cannot have an Edge with itself.
      *
-     * VertexHashCode()
+     * VertexHashCodeTest()
      * We test that hashCode() computes the same hash for equal objects, and
      * does not include the weight, source, target fields in the hash
      * computation, only the label field.
      *
-     * VertexEquals()
+     * VertexEqualsTest()
      * Vertices should test equal() if their labels are the same.
      * Otherwise, test false.
      *
-     * VertexHashCode()
-     * Vertices should have the same hashCode() if their labels are the same.
-     * Otherwise, test false.
      */
-    
-    // TODO tests for operations of Vertex
-    //ConcreteEdgesGraph.Edge Edge = new ConcreteEdgesGraph.Edge();
+
     @Test
-    public void VertexGetLabelTest() {
+    public void vertexGetLabelTest() {
 
         ConcreteVerticesGraph.Vertex TestVertex = new ConcreteVerticesGraph.Vertex("TestLabel");
         assertEquals("TestLabel", TestVertex.getLabel());
     }
+
     @Test
-    public void VertexGetConnectedVertices() {
+    public void vertexSetEdgeTest() {
+        //With default method, set weight to 1.
+        ConcreteVerticesGraph.Vertex sourceObject = new ConcreteVerticesGraph.Vertex("sourceObject");
+        ConcreteVerticesGraph.Vertex targetObject = new ConcreteVerticesGraph.Vertex("targetObject");
+
+        sourceObject.setEdge(targetObject);
+
+        HashMap<ConcreteVerticesGraph.Vertex, Integer> expectedTargets = new HashMap<>();
+        expectedTargets.put(targetObject, 1);
+
+        HashMap<ConcreteVerticesGraph.Vertex, Integer> expectedSources = new HashMap<>();
+        expectedSources.put(sourceObject, 1);
+
+        assertEquals(expectedSources, targetObject.getSources());
+        assertEquals(expectedTargets, sourceObject.getTargets());
+
+        //Change the weight to 77.
+        sourceObject.setEdge(targetObject, 77);
+
+        expectedSources.put(sourceObject, 77);
+        expectedTargets.put(targetObject, 77);
+
+        assertEquals(expectedTargets, sourceObject.getTargets());
+        assertEquals(expectedSources, targetObject.getSources());
+
+        //Delete edge using weight = 0.
+        sourceObject.setEdge(targetObject, 0);
+
+        expectedSources.remove(sourceObject);
+        expectedTargets.remove(targetObject);
+
+        assertEquals(expectedTargets, sourceObject.getTargets());
+        assertEquals(expectedSources, targetObject.getSources());
+    }
+
+    @Test
+    public void vertexGetConnectedVerticesTest() {
 
         ConcreteVerticesGraph.Vertex MainVertex = new ConcreteVerticesGraph.Vertex("MainVertex");
 
@@ -159,7 +193,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     }
 
     @Test
-    public void VertexIsSourceOf() {
+    public void vertexIsSourceOfTest() {
 
         ConcreteVerticesGraph.Vertex MainVertex = new ConcreteVerticesGraph.Vertex("MainVertex");
 
@@ -179,7 +213,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     }
 
     @Test
-    public void VertexIsTargetOf() {
+    public void vertexIsTargetOfTest() {
 
         ConcreteVerticesGraph.Vertex MainVertex = new ConcreteVerticesGraph.Vertex("MainVertex");
 
@@ -199,7 +233,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     }
 
     @Test
-    public void VertexHasEdgeWith() {
+    public void vertexHasEdgeWithTest() {
 
         ConcreteVerticesGraph.Vertex MainVertex = new ConcreteVerticesGraph.Vertex("MainVertex");
 
@@ -221,7 +255,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     }
 
     @Test
-    public void VertexEquals() {
+    public void vertexEqualsTest() {
 
         ConcreteVerticesGraph.Vertex Vertex = new ConcreteVerticesGraph.Vertex("Vertex");
         ConcreteVerticesGraph.Vertex EqualVertex = new ConcreteVerticesGraph.Vertex("Vertex");
@@ -232,7 +266,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     }
 
     @Test
-    public void VertexHashCode() {
+    public void VertexHashCodeTest() {
 
         ConcreteVerticesGraph.Vertex Vertex = new ConcreteVerticesGraph.Vertex("Vertex");
         ConcreteVerticesGraph.Vertex EqualVertex = new ConcreteVerticesGraph.Vertex("Vertex");
@@ -243,7 +277,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     }
 
     @Test
-    public void VertexToString() {
+    public void VertexToStringTest() {
 
         String mainLabel = "MainVertex";
         ConcreteVerticesGraph.Vertex MainVertex = new ConcreteVerticesGraph.Vertex(mainLabel);
@@ -269,4 +303,4 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         assertEquals(expectedString, MainVertex.toString());
     }
 }
-//TODO add test for the private methods addTarget, removeTarget, addSource, removeSource.
+

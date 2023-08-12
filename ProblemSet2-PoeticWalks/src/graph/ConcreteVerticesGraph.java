@@ -3,8 +3,6 @@
  */
 package graph;
 
-import javax.swing.plaf.synth.SynthTextAreaUI;
-import javax.swing.text.TableView;
 import java.util.*;
 
 /**
@@ -12,16 +10,9 @@ import java.util.*;
  */
 public class ConcreteVerticesGraph implements Graph<String> {
 
-    // Abstraction function:
-    //   TODO
-    // Representation invariant:
-    //   TODO
-    // Safety from rep exposure:
-    //   TODO
-
     /**
      * Abstraction function:
-     * Represents a graph; storing mutable object Vertex. Vertex objects store edges themselves.
+     * Represents a graph; storing mutable object Vertex. Vertex objects store its edges themselves.
      *
      * Representation invariant:
      * A Vertex object is stored only once in vertices.
@@ -31,10 +22,9 @@ public class ConcreteVerticesGraph implements Graph<String> {
      */
 
     /**
-     * TODO specification
      * Represents a vertex from Graph, with the given label.
-     * It stores the vertices it is connected with (both as source and as target) in two maps.
-     * Where the key is the connected vertex, and the value is the weight of the edge.
+     * It stores the vertices it is connected with (both as source and as target) in two maps,
+     * where the key is the connected vertex, and the value is the weight of the edge.
      * It is mutable.
      *
      * @param label The label of this vertex.
@@ -66,7 +56,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
         /**
          * Abstraction function:
          * Given a label, represents a mutable Vertex in the Graph implementation ConcreteVerticesGraph.
-         * A vertex also stores its edges.
+         * A vertex also stores a representation of its edges.
          *
          * Representation invariant:
          * label must be immutable.
@@ -76,9 +66,10 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * Safety from rep exposure:
          * All fields are private and final.
          * getConnectedVertices() returns a defensive copy.
+         * getSources and getTargets allow package-level access and return a shallow copy.
+         *
+         * !!! getConnectedVertices(), getSources() and getTargets() should return a deep copy to prevent rep exposure. I did not implement that.
          */
-        //TODO tests and documentation for the getSources and getTargets method. These methods should implement deep copies but 
-        // we will not do that.
         
         public Vertex(String label) {
             this.label = label;
@@ -106,10 +97,10 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
         /**
          * Instantiates a HashMap containing shallow copies of sourcesMap and targetsMap and returns it.
+         * This method implements a shallow copy, but it really should implement a deep copy instead.
          *
-         * @return A Map containing shallow deep copies of sourcesMap and targetsMap.
+         * @return A Map containing shallow deep copies of sourcesMap and targetsMap joined.
          */
-        //TODO this method doing a shallow copy breaks rep exposure, we must implement deep copy.
         public Map<Vertex, Integer> getConnectedVertices() {
             HashMap<Vertex, Integer> copyOfVertices = new HashMap<>();
             copyOfVertices.putAll(sourcesMap);
@@ -119,10 +110,10 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
         /**
          * Instantiates a HashMap containing shallow copies of sourcesMap and returns it.
+         * This method implements a shallow copy, but it really should implement a deep copy instead.
          *
          * @return A Map containing shallow deep copies of sourcesMap.
          */
-        //TODO this method doing a shallow copy breaks rep exposure, we must implement deep copy.
         Map<Vertex, Integer> getSources() {
             HashMap<Vertex, Integer> copyOfSources = new HashMap<>();
             copyOfSources.putAll(sourcesMap);
@@ -131,17 +122,16 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
         /**
          * Instantiates a HashMap containing shallow copies of targetsMap and returns it.
+         * This method implements a shallow copy, but it really should implement a deep copy instead.
          *
          * @return A Map containing shallow deep copies of targetsMap.
          */
-        //TODO this method doing a shallow copy breaks rep exposure, we must implement deep copy.
         Map<Vertex, Integer> getTargets() {
             HashMap<Vertex, Integer> copyOfTargets = new HashMap<>();
             copyOfTargets.putAll(targetsMap);
             return copyOfTargets;
         }
         
-
 
         /**
          * This method performs bilateral mutation of vertices connected by an Edge.
@@ -152,7 +142,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * This method mutates both objects.
          *
          * this object is the source vertex, target is the target vertex.
-         * The use overloading of the method to get set the default weight to be 1.
+         * The use method overloading to get set the default weight to be 1.
          *
          * @param target Vertex object to be connected with this.
          * @param weight weight of the Edge to be added, changed or deleted.
@@ -186,7 +176,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
         /**
          * This method put() the given vertex in targetsMap if it is not already in.
          * If it is already, we change the weight. Minimum weight is 1, and we construct with it
-         * as default by overloading the addTarget() method.
+         * as default by overloading addTarget().
          *
          * weight should be >= 1.
          *
@@ -195,7 +185,6 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * @return 0 if there was not such an Edge. Otherwise, it returns the old weight.
          */
         private int addTarget(Vertex vertex, Integer weight) {
-
             Integer originalWeight = targetsMap.get(vertex);
             targetsMap.put(vertex, weight);
             checkRep();
@@ -205,24 +194,21 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
         /**
          * This method remove() the given vertex in targetsMap.
-         * returns whether there was such am target in targetsMap.
          *
          * @param vertex The Vertex object to be removed from targetsMap.
          * @return 0 if there was not such an Edge. Otherwise, it returns the old weight.
          */
         private int removeTarget(Vertex vertex) {
-
             Integer originalWeight = targetsMap.get(vertex);
             targetsMap.remove(vertex);
             checkRep();
             return (originalWeight == null) ? 0 : originalWeight;
         }
 
-        //TODO test for addTarget, addSource, removeTarget, removeSource, addEdge, removeEdge, setEdge.
         /**
          * This method put() the given vertex in sourcesMap if it is not already in.
          * If it is already, we change the weight. Minimum weight is 1, and we construct with it
-         * as default by overloading the addSource() method.
+         * as default by overloading addSource().
          *
          * weight should be >= 1.
          *
@@ -231,29 +217,24 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * @return true 0 if there was not such an Edge. Otherwise, it returns the old weight.
          */
         private int addSource(Vertex vertex, Integer weight) {
-
             Integer originalWeight = sourcesMap.get(vertex);
             sourcesMap.put(vertex, weight);
             checkRep();
             return (originalWeight == null) ? 0 : originalWeight;
         }
 
-
         /**
          * This method remove() the given vertex in sourcesMap.
-         * returns whether there was such am target in sourcesMap.
          *
          * @param vertex The Vertex object to be removed from sourcesMap.
          * @return true 0 if there was not such an Edge. Otherwise, it returns the old weight.
          */
         private int removeSource(Vertex vertex) {
-
             Integer originalWeight = sourcesMap.get(vertex);
             sourcesMap.remove(vertex);
             checkRep();
             return (originalWeight == null) ? 0 : originalWeight;
         }
-
 
         /**
          * Given a vertex, we check whether this is a source of vertex.
@@ -287,7 +268,6 @@ public class ConcreteVerticesGraph implements Graph<String> {
             return getConnectedVertices().containsKey(vertex);
         }
 
-
         /**
          * Following the specification of Graph, labels must be unique, that is,
          * the label field is an identifier for Vertex objects. Therefore, we shall
@@ -310,7 +290,6 @@ public class ConcreteVerticesGraph implements Graph<String> {
             return Objects.equals(this.label, ((Vertex) obj).label);
         }
 
-
         /**
          * Following the specification of Graph, labels must be unique, that is,
          * the label field is an identifier of a Vertex object. Therefore, we shall
@@ -324,7 +303,6 @@ public class ConcreteVerticesGraph implements Graph<String> {
         public int hashCode() {
             return this.label.hashCode();
         }
-
 
         public String toString() {
 
@@ -346,10 +324,8 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
     private final List<Vertex> vertices = new ArrayList<>();
 
-    // TODO constructor
     public ConcreteVerticesGraph() {}
-    
-    // TODO checkRep
+
     private void checkRep() {
         //If every vertex is only once, then hashSet length and ArrayList length must be equal.
         HashSet<Vertex> uniqueVertices = new HashSet<>();
@@ -357,21 +333,19 @@ public class ConcreteVerticesGraph implements Graph<String> {
         assert uniqueVertices.size() == vertices.size();
     }
 
-
     @Override public boolean add(String vertex) {
-
 
         boolean wasInside = vertices.contains(new Vertex(vertex));
 
         if(wasInside) {
+            checkRep();
             return false;
         } else {
             vertices.add(new Vertex(vertex));
+            checkRep();
             return true;
         }
-
     }
-
 
     @Override
     public int set(String source, String target, int weight) {
@@ -401,7 +375,6 @@ public class ConcreteVerticesGraph implements Graph<String> {
     public boolean remove(String vertex) {
 
         int vertexIndex = vertices.indexOf(new Vertex(vertex));
-
 
         if(vertexIndex != -1) {
             Vertex vertexObject = vertices.get(vertexIndex);
@@ -456,30 +429,20 @@ public class ConcreteVerticesGraph implements Graph<String> {
         }
         return result;
     }
-    
-    // TODO toString()
 
     /**
-     *     public void toStringTest() {
+     * his method retrieves all the edges from every vertex in vertices.
+     * And adds them to the List only once, after checking connected vertices.
      *
-     *         Graph<String> TestGraph = emptyInstance();
-     *
-     *         assertTrue(TestGraph.toString().contains("---"));
-     *
-     *         TestGraph.add("NewLabel");
-     *
-     *         TestGraph.set("NewLabel", "AnotherLabel", 10);
-     *
-     *         System.out.println(TestGraph.toString());
-     *
-     *         assertTrue(TestGraph.toString().contains("NewLabel"));
-     *         assertTrue(TestGraph.toString().contains("AnotherLabel"));
-     *     }
-     *
+     * @return a List containing all the edges in printable version.
      */
-    //TODO edges method documentations and testing
+    private List<String> getEdges() {
 
-    public List<String> getEdges() {
+        /**
+         * By building the strings and using them as a form of hashing, and then
+         * using a HashSet we guarantee that we will obtain a single string per
+         * edge even if we check connected vertices.
+         */
 
         HashSet<String> uniqueEdges = new HashSet<>();
         //Build edges
@@ -504,5 +467,4 @@ public class ConcreteVerticesGraph implements Graph<String> {
     public String toString() {
         return this.vertices().toString() + " --- " + this.getEdges().toString();
     }
-    
 }
