@@ -105,7 +105,7 @@ To produce the test suite, we would pick an arbitrary pair (a,b) from each squar
 - etc.
 
 The figure below shows how the two-dimensional (a,b) space is divided by this partition, and the points are test cases that we might choose to completely cover the partition.
-![multiply-partition.png](../_resources/multiply-partition.png)
+![multiply-partition.png](../_resources/multiply-partition-1.png)
 
 ## Example: max()
 
@@ -133,7 +133,7 @@ Our test suit might then be:
 - (a, b) = (-5, -6) to cover a > b
 
 With the image below to illustrate.
-![max-partition.png](../_resources/max-partition.png)
+![max-partition.png](../_resources/max-partition-1.png)
 
 # Include Boundaries in the Partition
 

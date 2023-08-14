@@ -56,7 +56,7 @@ Finally, HEAD points to our current commit — almost. We also need to remember 
 
 **The Git object graph stores each version of an individual file once, and allows multiple commits to share that one copy. To the left is a more complete rendering of the Git object graph for our example.**
 
-![hello-git-history-trees.png](../_resources/hello-git-history-trees.png)
+![hello-git-history-trees.png](../_resources/hello-git-history-trees-1.png)
 
 # Importance of Version Control
 

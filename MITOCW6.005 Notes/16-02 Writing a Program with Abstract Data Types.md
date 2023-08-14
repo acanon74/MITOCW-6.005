@@ -77,7 +77,7 @@ Let’s test `optimize()` . Partitions:
 - Number of scalars in expression: 0, 1, 2, >2
 - Position of scalar in expression tree: immediate left, immediate right, left-of-left, left-of-right, right-of-left, right-of-right
 
-![429b09179d8244344e5f7ecebde961dc.png](../_resources/429b09179d8244344e5f7ecebde961dc.png)
+![429b09179d8244344e5f7ecebde961dc.png](../_resources/429b09179d8244344e5f7ecebde961dc-1.png)
 
 ### Choose a rep
 

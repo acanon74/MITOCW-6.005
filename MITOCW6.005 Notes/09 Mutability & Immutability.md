@@ -7,7 +7,7 @@ String is an example of an immutable type. A String object always represents the
 Since String is immutable, once created, a String object always has the same value. To add something to the end of a String, you have to create a new String object. By contrast, StringBuilder objects are mutable. This class has methods that change the value of the object, rather than just returning new values.
 
 The difference between mutability and immutability doesn’t matter much when there’s only one reference but there are big differences in how they behave when there are other references to the object. For example, when another variable t points to the same String object as s, and another variable tb points to the same StringBuilder as sb, then the differences between the immutable and mutable objects become more evident:
-![Screenshot 2023-07-09 035117.png](../_resources/Screenshot%202023-07-09%20035117.png)
+![Screenshot 2023-07-09 035117.png](../_resources/Screenshot%202023-07-09%20035117-1.png)
 
 Why do we need such difference? Consider the case of concatenate a large number of strings together. Then:
 

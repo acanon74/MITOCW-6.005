@@ -203,11 +203,11 @@ Suppose we want to implement the generic Set&lt;E&gt; interface above.
 Generic interface, non-generic implementation. One way we might do this is to implement Set&lt;E&gt; for a particular type E.
 
 When the interface mentions placeholder type E , the CharSet implementations replace E with Character . For example:
-![a537995f29c613f5041fd3235720be23.png](../_resources/a537995f29c613f5041fd3235720be23.png)
+![a537995f29c613f5041fd3235720be23.png](../_resources/a537995f29c613f5041fd3235720be23-1.png)
 
 Generic interface, generic implementation. We can also implement the generic Set&lt;E&gt; interface without picking a type for E . In that case, we write our code blind to the actual type that clients will choose for E . Java’s HashSet does that for Set . It’s declaration looks like:
 
-![806150961a8fc85da1a97ddc5a75c61e.png](../_resources/806150961a8fc85da1a97ddc5a75c61e.png)
+![806150961a8fc85da1a97ddc5a75c61e.png](../_resources/806150961a8fc85da1a97ddc5a75c61e-1.png)
 
 **A generic implementation can only rely on details of the placeholder types that are included in the interface’s specification. We’ll see in a future reading how HashSet relies on methods that every type in Java is required to implement — and only on those methods, because it can’t rely on methods declared in any specific type.**
 
@@ -222,4 +222,4 @@ Generic interface, generic implementation. We can also implement the generic Set
 
 # Realizing ADT Concepts in Java
 
-![5932f2a68800935370a882da4c20bdac.png](../_resources/5932f2a68800935370a882da4c20bdac.png)
+![5932f2a68800935370a882da4c20bdac.png](../_resources/5932f2a68800935370a882da4c20bdac-1.png)

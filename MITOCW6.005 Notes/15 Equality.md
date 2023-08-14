@@ -66,7 +66,7 @@ Like many languages, Java has two different operations for testing equality, wit
 - The `==` operator compares references. More precisely, it tests *referential* equality. Two references are == if they point to the same storage in memory.
 - The `equals()` operation compares object contents – in other words, *object* equality, in the sense that we’ve been talking about in this reading.
 
-![6e30ecd1fbc52c241358cbbef2bbc824.png](../_resources/6e30ecd1fbc52c241358cbbef2bbc824.png)
+![6e30ecd1fbc52c241358cbbef2bbc824.png](../_resources/6e30ecd1fbc52c241358cbbef2bbc824-1.png)
 
 # Equality of Immutable Types
 
@@ -205,7 +205,7 @@ public int hashCode() {
 
 Here are some strategies to write decent hash code functions.
 
-![3548027509daad25dab74771d111b89f.png](../_resources/3548027509daad25dab74771d111b89f.png)
+![3548027509daad25dab74771d111b89f.png](../_resources/3548027509daad25dab74771d111b89f-1.png)
 
 **https://stackoverflow.com/questions/113511/best-implementation-for-hashcode-method-for-a-collection**
 
