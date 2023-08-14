@@ -61,7 +61,7 @@ public class Pair<K> {
     /**
      * Override of hashCode() to be able to use Pair with Collections which implement hash encoding.
      * We simply append target to source label and create a hash of it using the generic hash function. This guarantees uniqueness.
-     *
+     * <p>
      *
      * @return hash of the union (a + " " + b) using the generic hash function.
      */
