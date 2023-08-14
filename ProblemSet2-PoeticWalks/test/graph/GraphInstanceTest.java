@@ -18,7 +18,7 @@ import java.util.Set;
  * methods to this class, or change the spec of {@link #emptyInstance()}.
  * Your tests MUST only obtain Graph instances by calling emptyInstance().
  * Your tests MUST NOT refer to specific concrete implementations.
- *
+ * <p>
  * PS: I did add the method utilMutabilityTest(), this was only to follow DRY. We could
  * have done without but mindless code repetition goes against the course's teachings :D
  */
@@ -29,42 +29,42 @@ public abstract class GraphInstanceTest {
      * Labels type must be immutable.
      * A vertex cannot be a source or target of itself.
      * Weight must be >= 1.
-     *
+     * <p>
      * Special cases:
      * empty graph.
-     *
+     * <p>
      * Test strategy:
      * We test every method of the class against an empty and non-empty graph.
      * We also, check whether they mutated the object.
-     *
+     * <p>
      * Breakdown of every test used:
-     *
+     * <p>
      * verticesMethodTest()
      * We instantiate TestGraph as empty and then add some labels to it, then we test whether the object was mutated.
-     *
+     * <p>
      * addMethodTest()
      * We instantiate EmptyGraph, we will check addition in the following states:
      * - When EmptyGraph is empty.
      * - When EmptyGraph already contains some vertices.
      * - Try to add() a pre-existing label, we should not modify and return false.
-     *
+     * <p>
      * In every step we check whether the object was modified or not.
-     *
+     * <p>
      * removeMethodTest()
      * We instantiate TestGraph as empty. And add() some labels.
      * To test the constructor we test whether we have initial edges.
-     *
+     * <p>
      * In every step we check whether the object was modified or not.
-     *
+     * <p>
      * Giving the specification, fot the method set() we should test for the following inputs:
-     *
+     * <p>
      * - Add an edge connecting existing vertices.
      * - Changing an edge connecting existing vertices.
      * - Add an edge connecting missing vertices, therefore creating the vertices and edge.
      * - The inputted weight is zero, we delete the edge.
-     *
+     * <p>
      * In every case we check whether the object was modified or not.
-     *
+     * <p>
      * testEmptySourcesTargetsMethods()
      * We instantiate TestGraph as an empty Graph.
      * We test sources() and targets() on the empty object, both of which should return and empty map.
@@ -72,14 +72,14 @@ public abstract class GraphInstanceTest {
      * We change an existent edge.
      * We add an edge connecting missing vertices, we add such vertices.
      * We set() using weight = 0. We delete the given edge.
-     *
+     * <p>
      * selfMutualReferenceTest()
      * We test a graph in which to vertices point at each other.
      * We add the two edges.
      * We remove() a vertex.
      * remove() should remove the vertex and its edges. We check whether this
      * modified the object.
-     *
+     * <p>
      * - We test a cycle in the graph.
      * We instantiate a cycle consisting of 3 vertices.
      * We add edges pointing at each other.
@@ -88,12 +88,12 @@ public abstract class GraphInstanceTest {
      * This test is important for my implementation of ConcreteVerticesGraph. Given the fact
      * that each vertex stores its edges, cycles could lead to transversing the cycle and
      * getting into an infinity loop or trying to remove() a null reference.
-     *
+     * <p>
      * multipleEdgesTest()
      * We test instantiating a vertex with multiple outgoing and incoming edges.
      * remove() should delete the vertex and all its edges properly.
-     * This test is important since, both of my implementations depend on hashing to guarantee
-     * that there is only one edge per pair of vertices, but multiple edges to different
+     * This test is important since both of my implementations depend on hashing to guarantee
+     * that there is only one edge per pair of vertices, but multiple edges for different pairs.
      * vertices are still allowed.
      */
 
@@ -124,7 +124,7 @@ public abstract class GraphInstanceTest {
         assertEquals(Collections.emptySet(), testGraph.vertices());
 
 
-        HashSet<String> expectedVertices = new HashSet<String>();
+        HashSet<String> expectedVertices = new HashSet<>();
 
         testGraph.add("FirstLabel");
         testGraph.add("SecondLabel");
@@ -141,7 +141,7 @@ public abstract class GraphInstanceTest {
 
         assertTrue(emptyGraph.add("NewLabel"));
 
-        HashSet<String> expectedEmptyAddition = new HashSet<String>();
+        HashSet<String> expectedEmptyAddition = new HashSet<>();
         expectedEmptyAddition.add("NewLabel");
 
         //It added and mutated the object
@@ -154,7 +154,7 @@ public abstract class GraphInstanceTest {
 
         assertTrue(nonEmptyGraph.add("TestLabel"));
 
-        HashSet<String> expectedAddition = new HashSet<String>();
+        HashSet<String> expectedAddition = new HashSet<>();
         expectedAddition.add("AlreadyInLabel");
         expectedAddition.add("TestLabel");
 
@@ -182,7 +182,7 @@ public abstract class GraphInstanceTest {
 
         assertTrue(nonEmptyGraph.remove("AlreadyInLabel"));
 
-        HashSet<String> expectedAddition = new HashSet<String>();
+        HashSet<String> expectedAddition = new HashSet<>();
         expectedAddition.add("AnotherLabel");
 
         //It removed and mutated the object
@@ -331,3 +331,5 @@ public abstract class GraphInstanceTest {
         assertEquals(expectedOutput, testGraph.vertices());
     }
 }
+
+//TODO Update docs to reflect object L, K, etc.

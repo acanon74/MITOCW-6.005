@@ -18,10 +18,10 @@ import graph.GraphInstanceTest;
 
 /**
  * Tests for ConcreteVerticesGraph.
- * 
+ * <p>
  * This class runs the GraphInstanceTest tests against ConcreteVerticesGraph, as
  * well as tests for that particular implementation.
- * 
+ * <p>
  * Tests against the Graph spec should be in GraphInstanceTest.
  */
 public class ConcreteVerticesGraphTest extends GraphInstanceTest {
@@ -30,7 +30,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
      * Provide a ConcreteVerticesGraph for tests in GraphInstanceTest.
      */
     @Override public Graph<String> emptyInstance() {
-        return new ConcreteVerticesGraph();
+        return new ConcreteVerticesGraph<>();
     }
     
     /*
@@ -62,58 +62,58 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
      */
 
     /**Vertex Tests
-     *
+     * <p>
      * Preconditions:
      * source and target must be different.
      * A vertex can't be source or target of itself.
      * Label must be immutable.
      * weight >= 1.
-     *
+     * <p>
      * Test strategy:
-     *
+     * <p>
      *
      * Breakdown of every test used:
-     *
+     * <p>
      * VertexGetLabelTest()
      * We instantiate an object using constructors, then we check for the
      * correctness of the label.
-     *
+     * <p>
      * VertexGetConnectedVerticesTest()
      * We instantiate a main object. We add some Edge objects, with
      * the main object acting both as source and as target.
      * We check that all the objects report their connections properly.
-     *
+     * <p>
      * SetEdgeTest()
      * We test setting an Edge with and without the weight parameter.
      * The method must change the edge's weight if weight >= 1. And
      * delete the edge if weight = 0.
-     *
+     * <p>
      * VertexIsSourceOfTest()
      * We instantiate a main object. We add some Edge objects, with
      * the main object acting both as source and as target.
      * We test that the main object is source only of those object for which
      * it is a source and not target.
      * It should be a source of a missing vertex.
-     *
+     * <p>
      * VertexIsTargetOfTest()
      * We instantiate a main object. We add some Edge objects, with
      * the main object acting both as source and as target.
      * We test that the main object is target only of those object for which
      * it is a target and not source.
      * It should be a target of a missing vertex.
-     *
+     * <p>
      * VertexHasEdgeWithTest()
      * We instantiate a main object. We add some Edge objects, with
      * the main object acting both as source and as target.
      * We test that the main object reports as connected to all the vertices.
      * We test that it reports not connected with non-connected vertices.
      * Cannot have an Edge with itself.
-     *
+     * <p>
      * VertexHashCodeTest()
      * We test that hashCode() computes the same hash for equal objects, and
      * does not include the weight, source, target fields in the hash
      * computation, only the label field.
-     *
+     * <p>
      * VertexEqualsTest()
      * Vertices should test equal() if their labels are the same.
      * Otherwise, test false.
@@ -123,22 +123,22 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void vertexGetLabelTest() {
 
-        ConcreteVerticesGraph.Vertex TestVertex = new ConcreteVerticesGraph.Vertex("TestLabel");
+        ConcreteVerticesGraph.Vertex<String> TestVertex = new ConcreteVerticesGraph.Vertex<>("TestLabel");
         assertEquals("TestLabel", TestVertex.getLabel());
     }
 
     @Test
     public void vertexSetEdgeTest() {
         //With default method, set weight to 1.
-        ConcreteVerticesGraph.Vertex sourceObject = new ConcreteVerticesGraph.Vertex("sourceObject");
-        ConcreteVerticesGraph.Vertex targetObject = new ConcreteVerticesGraph.Vertex("targetObject");
+        ConcreteVerticesGraph.Vertex<String> sourceObject = new ConcreteVerticesGraph.Vertex<>("sourceObject");
+        ConcreteVerticesGraph.Vertex<String> targetObject = new ConcreteVerticesGraph.Vertex<>("targetObject");
 
         sourceObject.setEdge(targetObject);
 
-        HashMap<ConcreteVerticesGraph.Vertex, Integer> expectedTargets = new HashMap<>();
+        HashMap<ConcreteVerticesGraph.Vertex<String>, Integer> expectedTargets = new HashMap<>();
         expectedTargets.put(targetObject, 1);
 
-        HashMap<ConcreteVerticesGraph.Vertex, Integer> expectedSources = new HashMap<>();
+        HashMap<ConcreteVerticesGraph.Vertex<String>, Integer> expectedSources = new HashMap<>();
         expectedSources.put(sourceObject, 1);
 
         assertEquals(expectedSources, targetObject.getSources());
@@ -166,16 +166,16 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void vertexGetConnectedVerticesTest() {
 
-        ConcreteVerticesGraph.Vertex MainVertex = new ConcreteVerticesGraph.Vertex("MainVertex");
+        ConcreteVerticesGraph.Vertex<String> MainVertex = new ConcreteVerticesGraph.Vertex<>("MainVertex");
 
-        ConcreteVerticesGraph.Vertex SourceVertex = new ConcreteVerticesGraph.Vertex("SourceVertex");
+        ConcreteVerticesGraph.Vertex<String> SourceVertex = new ConcreteVerticesGraph.Vertex<>("SourceVertex");
         SourceVertex.setEdge(MainVertex);
 
-        ConcreteVerticesGraph.Vertex TargetVertex = new ConcreteVerticesGraph.Vertex("TargetVertex");
+        ConcreteVerticesGraph.Vertex<String> TargetVertex = new ConcreteVerticesGraph.Vertex<>("TargetVertex");
         MainVertex.setEdge(TargetVertex);
 
 
-        Set<ConcreteVerticesGraph.Vertex> ExpectedSet = new HashSet<>();
+        Set<ConcreteVerticesGraph.Vertex<String>> ExpectedSet = new HashSet<>();
         ExpectedSet.add(TargetVertex);
         ExpectedSet.add(SourceVertex);
 
@@ -183,7 +183,7 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         assertEquals(ExpectedSet, MainVertex.getConnectedVertices().keySet());
 
 
-        Set<ConcreteVerticesGraph.Vertex> ExpectedSingle = new HashSet<ConcreteVerticesGraph.Vertex>();
+        Set<ConcreteVerticesGraph.Vertex<String>> ExpectedSingle = new HashSet<>();
         ExpectedSingle.add(MainVertex);
 
         //Source has 1 connection
@@ -195,15 +195,15 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void vertexIsSourceOfTest() {
 
-        ConcreteVerticesGraph.Vertex MainVertex = new ConcreteVerticesGraph.Vertex("MainVertex");
+        ConcreteVerticesGraph.Vertex<String> MainVertex = new ConcreteVerticesGraph.Vertex<>("MainVertex");
 
-        ConcreteVerticesGraph.Vertex SourceVertex = new ConcreteVerticesGraph.Vertex("SourceVertex");
+        ConcreteVerticesGraph.Vertex<String> SourceVertex = new ConcreteVerticesGraph.Vertex<>("SourceVertex");
         SourceVertex.setEdge(MainVertex);
 
-        ConcreteVerticesGraph.Vertex TargetVertex = new ConcreteVerticesGraph.Vertex("TargetVertex");
+        ConcreteVerticesGraph.Vertex<String> TargetVertex = new ConcreteVerticesGraph.Vertex<>("TargetVertex");
         MainVertex.setEdge(TargetVertex);
 
-        ConcreteVerticesGraph.Vertex MissingVertex = new ConcreteVerticesGraph.Vertex("MissingVertex");
+        ConcreteVerticesGraph.Vertex<String> MissingVertex = new ConcreteVerticesGraph.Vertex<>("MissingVertex");
 
 
         assertTrue(MainVertex.isSourceOf(TargetVertex));
@@ -215,15 +215,15 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void vertexIsTargetOfTest() {
 
-        ConcreteVerticesGraph.Vertex MainVertex = new ConcreteVerticesGraph.Vertex("MainVertex");
+        ConcreteVerticesGraph.Vertex<String> MainVertex = new ConcreteVerticesGraph.Vertex<>("MainVertex");
 
-        ConcreteVerticesGraph.Vertex SourceVertex = new ConcreteVerticesGraph.Vertex("SourceVertex");
+        ConcreteVerticesGraph.Vertex<String> SourceVertex = new ConcreteVerticesGraph.Vertex<>("SourceVertex");
         SourceVertex.setEdge(MainVertex);
 
-        ConcreteVerticesGraph.Vertex TargetVertex = new ConcreteVerticesGraph.Vertex("TargetVertex");
+        ConcreteVerticesGraph.Vertex<String> TargetVertex = new ConcreteVerticesGraph.Vertex<>("TargetVertex");
         MainVertex.setEdge(TargetVertex);
 
-        ConcreteVerticesGraph.Vertex MissingVertex = new ConcreteVerticesGraph.Vertex("MissingVertex");
+        ConcreteVerticesGraph.Vertex<String> MissingVertex = new ConcreteVerticesGraph.Vertex<>("MissingVertex");
 
 
         assertTrue(MainVertex.isTargetOf(SourceVertex));
@@ -235,15 +235,15 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void vertexHasEdgeWithTest() {
 
-        ConcreteVerticesGraph.Vertex MainVertex = new ConcreteVerticesGraph.Vertex("MainVertex");
+        ConcreteVerticesGraph.Vertex<String> MainVertex = new ConcreteVerticesGraph.Vertex<>("MainVertex");
 
-        ConcreteVerticesGraph.Vertex SourceVertex = new ConcreteVerticesGraph.Vertex("SourceVertex");
+        ConcreteVerticesGraph.Vertex<String> SourceVertex = new ConcreteVerticesGraph.Vertex<>("SourceVertex");
         SourceVertex.setEdge(MainVertex);
 
-        ConcreteVerticesGraph.Vertex TargetVertex = new ConcreteVerticesGraph.Vertex("TargetVertex");
+        ConcreteVerticesGraph.Vertex<String> TargetVertex = new ConcreteVerticesGraph.Vertex<>("TargetVertex");
         MainVertex.setEdge(TargetVertex);
 
-        ConcreteVerticesGraph.Vertex MissingVertex = new ConcreteVerticesGraph.Vertex("MissingVertex");
+        ConcreteVerticesGraph.Vertex<String> MissingVertex = new ConcreteVerticesGraph.Vertex<>("MissingVertex");
 
 
         assertTrue(MainVertex.hasEdgeWith(SourceVertex));
@@ -257,9 +257,9 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void vertexEqualsTest() {
 
-        ConcreteVerticesGraph.Vertex Vertex = new ConcreteVerticesGraph.Vertex("Vertex");
-        ConcreteVerticesGraph.Vertex EqualVertex = new ConcreteVerticesGraph.Vertex("Vertex");
-        ConcreteVerticesGraph.Vertex DiffVertex = new ConcreteVerticesGraph.Vertex("DiffVertex");
+        ConcreteVerticesGraph.Vertex<String> Vertex = new ConcreteVerticesGraph.Vertex<>("Vertex");
+        ConcreteVerticesGraph.Vertex<String> EqualVertex = new ConcreteVerticesGraph.Vertex<>("Vertex");
+        ConcreteVerticesGraph.Vertex<String> DiffVertex = new ConcreteVerticesGraph.Vertex<>("DiffVertex");
 
         assertTrue(Vertex.equals(EqualVertex));
         assertFalse(Vertex.equals(DiffVertex));
@@ -268,9 +268,9 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     @Test
     public void VertexHashCodeTest() {
 
-        ConcreteVerticesGraph.Vertex Vertex = new ConcreteVerticesGraph.Vertex("Vertex");
-        ConcreteVerticesGraph.Vertex EqualVertex = new ConcreteVerticesGraph.Vertex("Vertex");
-        ConcreteVerticesGraph.Vertex DiffVertex = new ConcreteVerticesGraph.Vertex("DiffVertex");
+        ConcreteVerticesGraph.Vertex<String> Vertex = new ConcreteVerticesGraph.Vertex<>("Vertex");
+        ConcreteVerticesGraph.Vertex<String> EqualVertex = new ConcreteVerticesGraph.Vertex<>("Vertex");
+        ConcreteVerticesGraph.Vertex<String> DiffVertex = new ConcreteVerticesGraph.Vertex<>("DiffVertex");
 
         assertTrue(Vertex.hashCode() == EqualVertex.hashCode());
         assertFalse(Vertex.hashCode() == DiffVertex.hashCode());
@@ -280,14 +280,14 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
     public void VertexToStringTest() {
 
         String mainLabel = "MainVertex";
-        ConcreteVerticesGraph.Vertex MainVertex = new ConcreteVerticesGraph.Vertex(mainLabel);
+        ConcreteVerticesGraph.Vertex<String> MainVertex = new ConcreteVerticesGraph.Vertex<>(mainLabel);
 
         String sourceLabel = "SourceVertex";
-        ConcreteVerticesGraph.Vertex SourceVertex = new ConcreteVerticesGraph.Vertex(sourceLabel);
+        ConcreteVerticesGraph.Vertex<String> SourceVertex = new ConcreteVerticesGraph.Vertex<>(sourceLabel);
         SourceVertex.setEdge(MainVertex);
 
         String targetLabel = "TargetVertex";
-        ConcreteVerticesGraph.Vertex TargetVertex = new ConcreteVerticesGraph.Vertex(targetLabel);
+        ConcreteVerticesGraph.Vertex<String> TargetVertex = new ConcreteVerticesGraph.Vertex<>(targetLabel);
         MainVertex.setEdge(TargetVertex);
 
         ArrayList<String> expectedSources = new ArrayList<>();
@@ -297,8 +297,8 @@ public class ConcreteVerticesGraphTest extends GraphInstanceTest {
         expectedTargets.add(targetLabel);
 
 
-        String expectedString = "[" + mainLabel + "]" + " Sources: " + expectedSources.toString()
-                + " Targets: " + expectedTargets.toString();
+        String expectedString = "[" + mainLabel + "]" + " Sources: " + expectedSources
+                + " Targets: " + expectedTargets;
 
         assertEquals(expectedString, MainVertex.toString());
     }

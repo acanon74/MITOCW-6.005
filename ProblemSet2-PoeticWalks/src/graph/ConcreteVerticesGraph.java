@@ -8,15 +8,15 @@ import java.util.*;
 /**
  * An implementation of Graph.
  */
-public class ConcreteVerticesGraph implements Graph<String> {
+public class ConcreteVerticesGraph<L> implements Graph<L> {
 
     /**
      * Abstraction function:
      * Represents a graph; storing mutable object Vertex. Vertex objects store its edges themselves.
-     *
+     * <p>
      * Representation invariant:
      * A Vertex object is stored only once in vertices.
-     *
+     * <p>
      * Safety from rep exposure:
      * all fields are private and final.
      */
@@ -33,11 +33,11 @@ public class ConcreteVerticesGraph implements Graph<String> {
      *
      * @return A mutable object representing a vertex from the data structure Graph.
      */
-    static class Vertex {
+    static class Vertex<K> {
 
-        private final String label;
-        private final HashMap<Vertex, Integer> sourcesMap = new HashMap<>();
-        private final HashMap<Vertex, Integer> targetsMap = new HashMap<>();
+        private final K label;
+        private final HashMap<Vertex<K>, Integer> sourcesMap = new HashMap<>();
+        private final HashMap<Vertex<K>, Integer> targetsMap = new HashMap<>();
 
         /**
          * We could use a 2x2 hashmap as we did with the other implementation, this would give constant
@@ -49,7 +49,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * targets, but it's much worse in storage, because now each of both vertices in an edge store
          * this relationship rather than being shared knowledge. But as you can see this solution is way more interesting
          * for the given PS.
-         *
+         * <p>
          * HashMap<hashFromBothObjects, Weight>;
          * */
 
@@ -57,21 +57,21 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * Abstraction function:
          * Given a label, represents a mutable Vertex in the Graph implementation ConcreteVerticesGraph.
          * A vertex also stores a representation of its edges.
-         *
+         * <p>
          * Representation invariant:
          * label must be immutable.
          * A vertex cannot be a source or target of itself.
          * all weights must be >= 1.
-         *
+         * <p>
          * Safety from rep exposure:
          * All fields are private and final.
          * getConnectedVertices() returns a defensive copy.
          * getSources and getTargets allow package-level access and return a shallow copy.
-         *
+         * <p>
          * !!! getConnectedVertices(), getSources() and getTargets() should return a deep copy to prevent rep exposure. I did not implement that.
          */
         
-        public Vertex(String label) {
+        public Vertex(K label) {
             this.label = label;
             checkRep();
         }
@@ -79,18 +79,18 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
         private void checkRep() {
 
-            HashMap<Vertex, Integer> copyOfAll = new HashMap<>();
+            HashMap<Vertex<K>, Integer> copyOfAll = new HashMap<>();
             copyOfAll.putAll(sourcesMap);
             copyOfAll.putAll(targetsMap);
 
-            for(Vertex vertex : copyOfAll.keySet()) {
+            for(Vertex<K> vertex : copyOfAll.keySet()) {
                 assert !this.equals(vertex);
                 assert copyOfAll.get(vertex) >= 1;
             }
         }
 
 
-        public String getLabel() {
+        public K getLabel() {
             return this.label;
         }
 
@@ -101,8 +101,8 @@ public class ConcreteVerticesGraph implements Graph<String> {
          *
          * @return A Map containing shallow deep copies of sourcesMap and targetsMap joined.
          */
-        public Map<Vertex, Integer> getConnectedVertices() {
-            HashMap<Vertex, Integer> copyOfVertices = new HashMap<>();
+        public Map<Vertex<K>, Integer> getConnectedVertices() {
+            HashMap<Vertex<K>, Integer> copyOfVertices = new HashMap<>();
             copyOfVertices.putAll(sourcesMap);
             copyOfVertices.putAll(targetsMap);
             return copyOfVertices;
@@ -114,10 +114,8 @@ public class ConcreteVerticesGraph implements Graph<String> {
          *
          * @return A Map containing shallow deep copies of sourcesMap.
          */
-        Map<Vertex, Integer> getSources() {
-            HashMap<Vertex, Integer> copyOfSources = new HashMap<>();
-            copyOfSources.putAll(sourcesMap);
-            return copyOfSources;
+        Map<Vertex<K>, Integer> getSources() {
+            return new HashMap<>(sourcesMap);
         }
 
         /**
@@ -126,10 +124,8 @@ public class ConcreteVerticesGraph implements Graph<String> {
          *
          * @return A Map containing shallow deep copies of targetsMap.
          */
-        Map<Vertex, Integer> getTargets() {
-            HashMap<Vertex, Integer> copyOfTargets = new HashMap<>();
-            copyOfTargets.putAll(targetsMap);
-            return copyOfTargets;
+        Map<Vertex<K>, Integer> getTargets() {
+            return new HashMap<>(targetsMap);
         }
         
 
@@ -140,7 +136,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * If there was no such Edge, we created it. If there was an Edge, we update the value.
          * If weight = 0 then it performs deletion of the edge.
          * This method mutates both objects.
-         *
+         * <p>
          * this object is the source vertex, target is the target vertex.
          * The use method overloading to get set the default weight to be 1.
          *
@@ -148,7 +144,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * @param weight weight of the Edge to be added, changed or deleted.
          * @return 0 if there was not such an Edge. Otherwise, it returns the old weight.
          */
-        public int setEdge(Vertex target, int weight) {
+        public int setEdge(Vertex<K> target, int weight) {
 
             if(this.equals(target)) {
                 throw new RuntimeException("A vertex cannot be a source or target of itself");
@@ -168,7 +164,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
                 throw new RuntimeException("weight must be >= 1");
             }
         }
-        public int setEdge(Vertex target) {
+        public int setEdge(Vertex<K> target) {
             return this.setEdge(target, 1);
         }
 
@@ -177,14 +173,14 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * This method put() the given vertex in targetsMap if it is not already in.
          * If it is already, we change the weight. Minimum weight is 1, and we construct with it
          * as default by overloading addTarget().
-         *
+         * <p>
          * weight should be >= 1.
          *
          * @param vertex a Vertex object to be added to targetsMap.
          * @param weight the weight of the edge to be represented.
          * @return 0 if there was not such an Edge. Otherwise, it returns the old weight.
          */
-        private int addTarget(Vertex vertex, Integer weight) {
+        private int addTarget(Vertex<K> vertex, Integer weight) {
             Integer originalWeight = targetsMap.get(vertex);
             targetsMap.put(vertex, weight);
             checkRep();
@@ -198,7 +194,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * @param vertex The Vertex object to be removed from targetsMap.
          * @return 0 if there was not such an Edge. Otherwise, it returns the old weight.
          */
-        private int removeTarget(Vertex vertex) {
+        private int removeTarget(Vertex<K> vertex) {
             Integer originalWeight = targetsMap.get(vertex);
             targetsMap.remove(vertex);
             checkRep();
@@ -209,14 +205,14 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * This method put() the given vertex in sourcesMap if it is not already in.
          * If it is already, we change the weight. Minimum weight is 1, and we construct with it
          * as default by overloading addSource().
-         *
+         * <p>
          * weight should be >= 1.
          *
          * @param vertex a Vertex object to be added to sourcesMap.
          * @param weight the weight of the edge to be represented.
          * @return true 0 if there was not such an Edge. Otherwise, it returns the old weight.
          */
-        private int addSource(Vertex vertex, Integer weight) {
+        private int addSource(Vertex<K> vertex, Integer weight) {
             Integer originalWeight = sourcesMap.get(vertex);
             sourcesMap.put(vertex, weight);
             checkRep();
@@ -229,7 +225,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * @param vertex The Vertex object to be removed from sourcesMap.
          * @return true 0 if there was not such an Edge. Otherwise, it returns the old weight.
          */
-        private int removeSource(Vertex vertex) {
+        private int removeSource(Vertex<K> vertex) {
             Integer originalWeight = sourcesMap.get(vertex);
             sourcesMap.remove(vertex);
             checkRep();
@@ -242,7 +238,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * @param vertex Vertex object we checked whether it is a target of this.
          * @return true if vertex is a target of this, otherwise false.
          */
-        public boolean isSourceOf(Vertex vertex) {
+        public boolean isSourceOf(Vertex<K> vertex) {
             return targetsMap.containsKey(vertex);
         }
 
@@ -252,7 +248,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
          *  @param vertex Vertex we checked whether it is a source of this.
          * @return ture if vertex is a source of this, otherwise false.
          */
-        public boolean isTargetOf(Vertex vertex) {
+        public boolean isTargetOf(Vertex<K> vertex) {
             return sourcesMap.containsKey(vertex);
         }
 
@@ -264,7 +260,7 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * @param vertex Vertex we checked whether it is connected with this.
          * @return true if there is an edge, otherwise false. It doesn't matter if this is source or target.
          */
-        public boolean hasEdgeWith(Vertex vertex) {
+        public boolean hasEdgeWith(Vertex<K> vertex) {
             return getConnectedVertices().containsKey(vertex);
         }
 
@@ -287,14 +283,13 @@ public class ConcreteVerticesGraph implements Graph<String> {
             if(obj.getClass() != this.getClass()) {
                 return false;
             }
-            return Objects.equals(this.label, ((Vertex) obj).label);
+            return Objects.equals(this.label, ((Vertex<K>) obj).label);
         }
 
         /**
          * Following the specification of Graph, labels must be unique, that is,
          * the label field is an identifier of a Vertex object. Therefore, we shall
          * hash Vertex using label and no other field.
-         *
          * Calculates hashCode() using this object label.
          *
          * @return int which correspond with the unique identifier of this object.
@@ -306,52 +301,51 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
         public String toString() {
 
-            List<String> test = new ArrayList<>();
+            List<String> sourcesString = new ArrayList<>();
 
-            List<String> testy = new ArrayList<>();
+            List<String> targetsString = new ArrayList<>();
 
 
-            for(Vertex vertex : sourcesMap.keySet()) {
-                test.add(vertex.getLabel());
+            for(Vertex<K> vertex : sourcesMap.keySet()) {
+                sourcesString.add((String) vertex.getLabel());
             }
-            for(Vertex vertex : targetsMap.keySet()) {
-                testy.add(vertex.getLabel());
+            for(Vertex<K> vertex : targetsMap.keySet()) {
+                targetsString.add((String) vertex.getLabel());
             }
 
-            return "[" + this.label + "]" + " Sources: " + test.toString() + " Targets: " + testy.toString();
+            return "[" + this.label + "]" + " Sources: " + sourcesString + " Targets: " + targetsString;
         }
     }
 
-    private final List<Vertex> vertices = new ArrayList<>();
+    private final List<Vertex<L>> vertices = new ArrayList<>();
 
     public ConcreteVerticesGraph() {}
 
     private void checkRep() {
         //If every vertex is only once, then hashSet length and ArrayList length must be equal.
-        HashSet<Vertex> uniqueVertices = new HashSet<>();
-        uniqueVertices.addAll(vertices);
+        HashSet<Vertex<L>> uniqueVertices = new HashSet<>(vertices);
         assert uniqueVertices.size() == vertices.size();
     }
 
-    @Override public boolean add(String vertex) {
+    @Override public boolean add(L vertex) {
 
-        boolean wasInside = vertices.contains(new Vertex(vertex));
+        boolean wasInside = vertices.contains(new Vertex<>(vertex));
 
         if(wasInside) {
             checkRep();
             return false;
         } else {
-            vertices.add(new Vertex(vertex));
+            vertices.add(new Vertex<>(vertex));
             checkRep();
             return true;
         }
     }
 
     @Override
-    public int set(String source, String target, int weight) {
+    public int set(L source, L target, int weight) {
 
-        int sourceIndex = vertices.indexOf(new Vertex(source));
-        int targetIndex = vertices.indexOf(new Vertex(target));
+        int sourceIndex = vertices.indexOf(new Vertex<>(source));
+        int targetIndex = vertices.indexOf(new Vertex<>(target));
 
         if(sourceIndex == -1) {
             this.add(source);
@@ -360,11 +354,11 @@ public class ConcreteVerticesGraph implements Graph<String> {
             this.add(target);
         }
 
-        sourceIndex = vertices.indexOf(new Vertex(source));
-        targetIndex = vertices.indexOf(new Vertex(target));
+        sourceIndex = vertices.indexOf(new Vertex<>(source));
+        targetIndex = vertices.indexOf(new Vertex<>(target));
 
-        Vertex sourceVertex = vertices.get(sourceIndex);
-        Vertex targetVertex = vertices.get(targetIndex);
+        Vertex<L> sourceVertex = vertices.get(sourceIndex);
+        Vertex<L> targetVertex = vertices.get(targetIndex);
 
         int originalWeight = sourceVertex.setEdge(targetVertex, weight);
         checkRep();
@@ -372,17 +366,17 @@ public class ConcreteVerticesGraph implements Graph<String> {
     }
     
     @Override
-    public boolean remove(String vertex) {
+    public boolean remove(L vertex) {
 
-        int vertexIndex = vertices.indexOf(new Vertex(vertex));
+        int vertexIndex = vertices.indexOf(new Vertex<>(vertex));
 
         if(vertexIndex != -1) {
-            Vertex vertexObject = vertices.get(vertexIndex);
+            Vertex<L> vertexObject = vertices.get(vertexIndex);
 
-            for(Vertex source : vertexObject.getSources().keySet()) {
+            for(Vertex<L> source : vertexObject.getSources().keySet()) {
                 source.setEdge(vertexObject, 0);
             }
-            for(Vertex target : vertexObject.getTargets().keySet()) {
+            for(Vertex<L> target : vertexObject.getTargets().keySet()) {
                 vertexObject.setEdge(target, 0);
             }
 
@@ -396,35 +390,35 @@ public class ConcreteVerticesGraph implements Graph<String> {
     }
     
     @Override
-    public Set<String> vertices() {
+    public Set<L> vertices() {
 
-        Set<String> result = new HashSet<>();
-        for(Vertex vertex : vertices) {
+        Set<L> result = new HashSet<>();
+        for(Vertex<L> vertex : vertices) {
             result.add(vertex.getLabel());
         }
         return result;
     }
     
     @Override
-    public Map<String, Integer> sources(String target) {
+    public Map<L, Integer> sources(L target) {
 
-        int targetIndex = vertices.indexOf(new Vertex(target));
-        Vertex targetVertex = vertices.get(targetIndex);
-        Map<String, Integer> result = new HashMap<>();
+        int targetIndex = vertices.indexOf(new Vertex<>(target));
+        Vertex<L> targetVertex = vertices.get(targetIndex);
+        Map<L, Integer> result = new HashMap<>();
 
-        for(Map.Entry<Vertex, Integer> entry : targetVertex.getSources().entrySet()) {
+        for(Map.Entry<Vertex<L>, Integer> entry : targetVertex.getSources().entrySet()) {
             result.put(entry.getKey().getLabel(), entry.getValue());
         }
         return result;
     }
 
-    @Override public Map<String, Integer> targets(String source) {
+    @Override public Map<L, Integer> targets(L source) {
 
-        int sourceIndex = vertices.indexOf(new Vertex(source));
-        Vertex sourceVertex = vertices.get(sourceIndex);
-        Map<String, Integer> result = new HashMap<>();
+        int sourceIndex = vertices.indexOf(new Vertex<>(source));
+        Vertex<L> sourceVertex = vertices.get(sourceIndex);
+        Map<L, Integer> result = new HashMap<>();
 
-        for(Map.Entry<Vertex, Integer> entry : sourceVertex.getTargets().entrySet()) {
+        for(Map.Entry<Vertex<L>, Integer> entry : sourceVertex.getTargets().entrySet()) {
             result.put(entry.getKey().getLabel(), entry.getValue());
         }
         return result;
@@ -443,19 +437,18 @@ public class ConcreteVerticesGraph implements Graph<String> {
          * using a HashSet we guarantee that we will obtain a single string per
          * edge even if we check connected vertices.
          */
-
         HashSet<String> uniqueEdges = new HashSet<>();
         //Build edges
-        for(Vertex vertex : vertices) {
+        for(Vertex<L> vertex : vertices) {
             //build targets
-            for(Map.Entry<Vertex, Integer> entry : vertex.getTargets().entrySet()) {
-                String targetLabel = entry.getKey().getLabel();
+            for(Map.Entry<Vertex<L>, Integer> entry : vertex.getTargets().entrySet()) {
+                L targetLabel = entry.getKey().getLabel();
                 int edgeWeight = entry.getValue();
                 uniqueEdges.add("(" + vertex.getLabel() + "-->" + targetLabel + ", " + edgeWeight + ")");
             }
             //build sources
-            for(Map.Entry<Vertex, Integer> entry : vertex.getSources().entrySet()) {
-                String sourceLabel = entry.getKey().getLabel();
+            for(Map.Entry<Vertex<L>, Integer> entry : vertex.getSources().entrySet()) {
+                L sourceLabel = entry.getKey().getLabel();
                 int edgeWeight = entry.getValue();
                 uniqueEdges.add("(" + vertex.getLabel() + "-->" + sourceLabel + ", " + edgeWeight + ")");
             }
@@ -465,6 +458,6 @@ public class ConcreteVerticesGraph implements Graph<String> {
 
     @Override
     public String toString() {
-        return this.vertices().toString() + " --- " + this.getEdges().toString();
+        return this.vertices().toString() + " --- " + this.getEdges();
     }
 }
