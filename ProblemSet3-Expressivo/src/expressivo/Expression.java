@@ -18,7 +18,6 @@ public interface Expression {
     
     // Datatype definition
     //   TODO
-    
     /**
      * Parse an expression.
      * @param input expression to parse, as defined in the PS3 handout.
@@ -33,7 +32,8 @@ public interface Expression {
      * @return a parsable representation of this expression, such that
      * for all e:Expression, e.equals(Expression.parse(e.toString())).
      */
-    @Override 
+    //TODO write test such that for all e:Expression, e.equals(Expression.parse(e.toString())).
+    @Override
     public String toString();
 
     /**
@@ -53,5 +53,5 @@ public interface Expression {
     public int hashCode();
     
     // TODO more instance methods
-    
+
 }

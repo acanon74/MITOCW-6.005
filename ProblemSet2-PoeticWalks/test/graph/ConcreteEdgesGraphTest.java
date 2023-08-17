@@ -48,7 +48,6 @@ public class ConcreteEdgesGraphTest extends GraphInstanceTest {
      * We instantiate an empty graph.
      * assertTrue(TestGraph.toString().contains("---")).
      * We test that, given an empty graph, the return String should not report any vertices.
-     *
      */
     @Test
     public void toStringTest() {
