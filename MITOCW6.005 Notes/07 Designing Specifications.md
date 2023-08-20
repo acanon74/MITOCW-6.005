@@ -43,7 +43,7 @@ These two rules embody several ideas. First, you can always weaken the precondit
 
 # Diagramming specifications
 
-![4a63193c6cd57420c819d54e8a5dca2c.png](../_resources/4a63193c6cd57420c819d54e8a5dca2c-1.png)
+![4a63193c6cd57420c819d54e8a5dca2c.png](../_resources/4a63193c6cd57420c819d54e8a5dca2c.png)
 
 We draw points representing individual *Implementations*. We draw each specification as a region, which will contain those implementations satisfying the precondition-implies-postcondition contract, and will leave out those which do not.
 
@@ -53,7 +53,7 @@ We can imagine clients looking in on this space: the specification acts as a fir
     
 - Clients don’t know which implementation they will get. They must respect the spec, but also have the freedom to change how they’re using the implementation without fear that it will suddenly break.
     
-![217c3aab582fb33a5228fa24780ee095.png](../_resources/217c3aab582fb33a5228fa24780ee095-1.png)
+![217c3aab582fb33a5228fa24780ee095.png](../_resources/217c3aab582fb33a5228fa24780ee095.png)
 
 
 How will similar specifications relate to one another? Suppose we start with specification S1 and use it to create a new specification S2.

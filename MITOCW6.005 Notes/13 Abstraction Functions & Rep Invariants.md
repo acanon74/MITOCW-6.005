@@ -122,7 +122,7 @@ public static List<Tweet> tweetEveryHourToday () {
 
 Notice that the constructor of Tweet saves the reference that was passed in, so all 24 Tweet objects end up with the same time, as shown in this snapshot diagram.
 
-![tweetEveryHourToday.png](../_resources/tweetEveryHourToday-1.png)
+![tweetEveryHourToday.png](../_resources/tweetEveryHourToday.png)
 
 Again, the immutability of Tweet has been violated. We can fix this problem by using defensive copying, this time in the constructor:
 
@@ -162,7 +162,7 @@ public class CharSet {
 - **Not all rep values are mapped.** In this case, the string “abbc” is not mapped. In this case, we have decided that the string should not contain duplicates. This will allow us to terminate the remove method when we hit the first instance of a particular character, since we know there can be at most one.
     
 
-![charset-af-ri.png](../_resources/charset-af-ri-1.png)
+![charset-af-ri.png](../_resources/charset-af-ri.png)
 
 In practice, we can only illustrate a few elements of the two spaces and their relationships; the graph as a whole is infinite. So we describe it by giving two things:
 
@@ -226,7 +226,7 @@ public class RatNum {
 
 Here is a picture of the abstraction function and rep invariant for this code. The RI requires that numerator/denominator pairs be in reduced form (i.e., lowest terms), so pairs like (2,4) above should be drawn as outside the RI.
 
-![ratnum-af-ri.png](../_resources/ratnum-af-ri-1.png)
+![ratnum-af-ri.png](../_resources/ratnum-af-ri.png)
 
 ## Checking the Rep Invariant
 

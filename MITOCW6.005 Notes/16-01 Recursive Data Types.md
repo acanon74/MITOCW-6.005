@@ -10,7 +10,7 @@ Immutability is powerful not just because of its safety, but also because of the
 
 Let’s define a data type for an immutable list, ImList&lt;E&gt; . The data type has four fundamental operations:
 
-![583be878769145100d976a82c84b343b.png](../_resources/583be878769145100d976a82c84b343b-1.png)
+![583be878769145100d976a82c84b343b.png](../_resources/583be878769145100d976a82c84b343b.png)
 
 These four operations have a long and distinguished pedigree. They are fundamental to the list-processing languages Lisp and Scheme (known as nil, cons, car, cdr).
 
@@ -262,7 +262,7 @@ And( Or(Variable("P"), Variable("Q")),
 
 A key operation for Boolean formulas is testing whether they are satisfiable , that is, whether some assignment of true/false values to the variables leads the formula to evaluate to true. There is a simple but slow algorithm for checking satisfiability:
 
-![8adbb0a2c8683f7c4f6b0086597aba71.png](../_resources/8adbb0a2c8683f7c4f6b0086597aba71-1.png)
+![8adbb0a2c8683f7c4f6b0086597aba71.png](../_resources/8adbb0a2c8683f7c4f6b0086597aba71.png)
 
 ## Backtracking search with immutability
 

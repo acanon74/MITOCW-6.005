@@ -16,9 +16,9 @@ A specification of a method consists of several clauses:
 - a postcondition, indicated by the keyword effects
 - The precondition is an obligation on the client (i.e., the caller of the method). It’s a condition over the state in which the method is invoked.
 
-![firewall-implies.png](../_resources/firewall-implies-1.png)
+![firewall-implies.png](../_resources/firewall-implies.png)
 
-![firewall-unsat.png](../_resources/firewall-unsat-1.png)
+![firewall-unsat.png](../_resources/firewall-unsat.png)
 
 The postcondition is an obligation on the implementer of the method. If the precondition holds for the invoking state, the method is obliged to obey the postcondition, by returning appropriate values, throwing specified exceptions, modifying or not modifying objects, and so on.
 
@@ -57,7 +57,7 @@ static boolean addAll(@NonNull List<T> list1, @NonNull List<T> list2)
 
 A specification of a method can talk about the parameters and return value of the method, but it should never talk about local variables of the method or private fields of the method’s class. You should consider the implementation invisible to the reader of the spec.
 
-![firewall-talk.png](../_resources/firewall-talk-1.png)
+![firewall-talk.png](../_resources/firewall-talk.png)
 
 # Testing and specifications
 

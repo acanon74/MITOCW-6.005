@@ -143,7 +143,7 @@ port ::= [0-9]+
 word ::= [a-z]+
 ```
 
-<img src="../_resources/21c050e0a663ca7982c3cd439fc2ac17-1.png" alt="21c050e0a663ca7982c3cd439fc2ac17.png" width="282" height="206" class="jop-noMdConv">
+<img src="../_resources/21c050e0a663ca7982c3cd439fc2ac17.png" alt="21c050e0a663ca7982c3cd439fc2ac17.png" width="282" height="206" class="jop-noMdConv">
 
 *Notice how hostname is now defined recursively in terms of itself.* Which part of the hostname definition is the base case, and which part is the recursive step? What kinds of hostnames are allowed?
 
