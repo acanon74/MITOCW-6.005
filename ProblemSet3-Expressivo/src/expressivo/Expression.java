@@ -3,6 +3,29 @@
  */
 package expressivo;
 
+import expressivo.parser.ExpressionBaseListener;
+import expressivo.parser.ExpressionLexer;
+import expressivo.parser.ExpressionListener;
+import expressivo.parser.ExpressionParser;
+import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
+import java.util.List;
+import java.util.Stack;
+
+import org.antlr.v4.gui.Trees;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
 /**
  * An immutable data type representing a polynomial expression of:
  *   + and *
@@ -16,16 +39,38 @@ package expressivo;
  */
 public interface Expression {
     
-    // Datatype definition
-    //   TODO
     /**
+     * Datatype definition:
+     * Expression = NumberExpression(double number) + SumOperator(Expression leftHand, Expression rightHand) +
+     * MultiplicationOperator(Expression leftHand, Expression rightHand) + VariableExpression(String variable)
+    */
+
+
+     /**
      * Parse an expression.
      * @param input expression to parse, as defined in the PS3 handout.
      * @return expression AST for the input
      * @throws IllegalArgumentException if the expression is invalid
      */
     public static Expression parse(String input) {
-        throw new RuntimeException("unimplemented");
+        CharStream stream = new ANTLRInputStream(input);
+        ExpressionLexer lexer = new ExpressionLexer(stream);
+        TokenStream tokens = new CommonTokenStream(lexer);
+
+        ExpressionParser parser = new ExpressionParser(tokens);
+
+        ExpressionParser.RootContext tree = parser.root();
+
+        ParseTreeWalker walker = new ParseTreeWalker();
+        ExpressionListener listener = new ExpressionBaseListener();
+        walker.walk(listener, tree);
+
+
+        System.out.println(tree.toStringTree(parser));
+        Trees.inspect(tree, parser);
+
+
+        return new SumOperator(new NumberExpression(4.0), new NumberExpression(5.0));
     }
     
     /**

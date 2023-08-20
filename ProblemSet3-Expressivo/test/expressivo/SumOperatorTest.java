@@ -92,7 +92,7 @@ public class SumOperatorTest {
 
 
         assertTrue(sum.equals(equalSum));
-        assertTrue(sum.equals(reverseSum));
+        assertFalse(sum.equals(reverseSum));
         assertFalse(sum.equals(diffSum));
     }
 

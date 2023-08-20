@@ -3,6 +3,7 @@
 package expressivo.parser;
 // Do not edit this .java file! Edit the grammar in Expression.g4 and re-run Antlr.
 
+import expressivo.Expression;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -22,7 +23,9 @@ public interface ExpressionListener extends ParseTreeListener {
   void exitRoot(ExpressionParser.RootContext ctx);
   /**
    * Enter a parse tree produced by {@link ExpressionParser#sum}.
+   *
    * @param ctx the parse tree
+   * @return
    */
   void enterSum(ExpressionParser.SumContext ctx);
   /**
@@ -30,6 +33,27 @@ public interface ExpressionListener extends ParseTreeListener {
    * @param ctx the parse tree
    */
   void exitSum(ExpressionParser.SumContext ctx);
+  /**
+   * Enter a parse tree produced by {@link ExpressionParser#product}.
+   * @param ctx the parse tree
+   */
+  void enterProduct(ExpressionParser.ProductContext ctx);
+  /**
+   * Exit a parse tree produced by {@link ExpressionParser#product}.
+   * @param ctx the parse tree
+   */
+  void exitProduct(ExpressionParser.ProductContext ctx);
+  /**
+   * Enter a parse tree produced by {@link ExpressionParser#expression}.
+   *
+   * @param ctx the parse tree
+   */
+  void enterExpression(ExpressionParser.ExpressionContext ctx);
+  /**
+   * Exit a parse tree produced by {@link ExpressionParser#expression}.
+   * @param ctx the parse tree
+   */
+  void exitExpression(ExpressionParser.ExpressionContext ctx);
   /**
    * Enter a parse tree produced by {@link ExpressionParser#primitive}.
    * @param ctx the parse tree

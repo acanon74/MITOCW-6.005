@@ -92,7 +92,7 @@ public class MultiplicationOperatorTest {
 
 
         assertTrue(multi.equals(equalMulti));
-        assertTrue(multi.equals(reversedMulti));
+        assertFalse(multi.equals(reversedMulti));
         assertFalse(multi.equals(diffMulti));
     }
 

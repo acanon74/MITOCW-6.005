@@ -28,6 +28,9 @@ public class Main {
      * @throws IOException if there is an error reading the input
      */
     public static void main(String[] args) throws IOException {
+
+        Expression.parse("(1.0 + 2.0)");
+
         final BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         Optional<String> currentExpression = Optional.empty();
         

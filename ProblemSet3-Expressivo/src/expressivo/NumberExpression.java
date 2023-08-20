@@ -24,7 +24,7 @@ public class NumberExpression implements Expression {
 
     public NumberExpression(double value) {
         this.value = value;
-        this.type = "primitive";
+        this.type = "number";
         checkRep();
     }
 

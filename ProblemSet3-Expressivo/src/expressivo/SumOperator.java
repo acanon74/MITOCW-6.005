@@ -51,9 +51,7 @@ public class SumOperator implements Expression {
 
         final SumOperator other = (SumOperator) obj;
 
-        //either they match or they are reversed
-        return ( (this.leftHand.equals(other.leftHand) && this.rightHand.equals(other.rightHand))
-                || (this.leftHand.equals(other.rightHand) && this.rightHand.equals(other.leftHand)) );
+        return (this.leftHand.equals(other.leftHand) && this.rightHand.equals(other.rightHand));
     }
 
     @Override
