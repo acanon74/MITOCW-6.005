@@ -23,25 +23,34 @@ public class MinesweeperServer {
     private static final int MAXIMUM_PORT = 65535;
     /** Default square board size. */
     private static final int DEFAULT_SIZE = 10;
-
     /** Socket for receiving incoming connections. */
     private final ServerSocket serverSocket;
     /** True if the server should *not* disconnect a client after a BOOM message. */
     private final boolean debug;
 
+    public static int playerCount;
+    public static ArrayList<Player> players = new ArrayList<>();
+    /**Default protocol to be used */
+    public Protocol upperProtocol;
+
     // TODO: Abstraction function, rep invariant, rep exposure
 
     /**
-     * Make a MinesweeperServer that listens for connections on port.
+     * Make a MinesweeperServer that listens for connections on port. This method sets the
+     * networking protocol to be used throughout the program.
      * 
      * @param port port number, requires 0 <= port <= 65535
      * @param debug debug mode flag
      * @throws IOException if an error occurs opening the server socket
      */
-    public MinesweeperServer(int port, boolean debug) throws IOException {
+    public MinesweeperServer(int port, boolean debug, int X, int Y) throws IOException {
+        playerCount = 0;
         serverSocket = new ServerSocket(port);
         this.debug = debug;
+        upperProtocol = new Protocol(serverSocket, X, Y);
     }
+
+    //TODO fix deleting players objects and counter when a players is disconnected.
 
     /**
      * Run the server, listening for client connections and handling them.
@@ -51,84 +60,49 @@ public class MinesweeperServer {
      *                     (IOExceptions from individual clients do *not* terminate serve())
      */
     public void serve() throws IOException {
-        while (true) {
-            // block until a client connects
-            Socket socket = serverSocket.accept();
 
-            // handle the client
+        Socket socket = null;
+
+        while (true) {
             try {
-                handleConnection(socket);
+                socket = serverSocket.accept();
             } catch (IOException ioe) {
                 ioe.printStackTrace(); // but don't terminate serve()
-            } finally {
-                socket.close();
             }
+            handleConnection(socket);
         }
     }
 
     /**
      * Handle a single client connection. Returns when client disconnects.
+     * This method keeps track of a Player object upon successful connection.
+     * A new Thread is created for every Player connected. This Thread manages the
+     * connection with the client.
      * 
      * @param socket socket where the client is connected
      * @throws IOException if the connection encounters an error or terminates unexpectedly
      */
     private void handleConnection(Socket socket) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        playerCount++;
+        Player player = new Player(playerCount);
+        players.add(player);
 
-        try {
-            for (String line = in.readLine(); line != null; line = in.readLine()) {
-                String output = handleRequest(line);
-                if (output != null) {
-                    // TODO: Consider improving spec of handleRequest to avoid use of null
-                    out.println(output);
-                }
-            }
-        } finally {
-            out.close();
-            in.close();
-        }
+        PlayerThread thread = new PlayerThread(player, upperProtocol, socket);
+        thread.promptName();
+
+        new Thread(thread).start();
     }
 
     /**
      * Handler for client input, performing requested operations and returning an output message.
+     * To be correctly processed, the message must be part of the protocol defined by the
+     * Protocol class.
      * 
      * @param input message from client
      * @return message to client, or null if none
      */
     private String handleRequest(String input) {
-        String regex = "(look)|(help)|(bye)|"
-                     + "(dig -?\\d+ -?\\d+)|(flag -?\\d+ -?\\d+)|(deflag -?\\d+ -?\\d+)";
-        if ( ! input.matches(regex)) {
-            // invalid input
-            // TODO Problem 5
-        }
-        String[] tokens = input.split(" ");
-        if (tokens[0].equals("look")) {
-            // 'look' request
-            // TODO Problem 5
-        } else if (tokens[0].equals("help")) {
-            // 'help' request
-            // TODO Problem 5
-        } else if (tokens[0].equals("bye")) {
-            // 'bye' request
-            // TODO Problem 5
-        } else {
-            int x = Integer.parseInt(tokens[1]);
-            int y = Integer.parseInt(tokens[2]);
-            if (tokens[0].equals("dig")) {
-                // 'dig x y' request
-                // TODO Problem 5
-            } else if (tokens[0].equals("flag")) {
-                // 'flag x y' request
-                // TODO Problem 5
-            } else if (tokens[0].equals("deflag")) {
-                // 'deflag x y' request
-                // TODO Problem 5
-            }
-        }
-        // TODO: Should never get here, make sure to return in each of the cases above
-        throw new UnsupportedOperationException();
+        return upperProtocol.handleRequest(input);
     }
 
     /**
@@ -249,7 +223,7 @@ public class MinesweeperServer {
         
         // TODO: Continue implementation here in problem 4
         
-        MinesweeperServer server = new MinesweeperServer(port, debug);
+        MinesweeperServer server = new MinesweeperServer(port, debug, sizeX, sizeY);
         server.serve();
     }
 }
