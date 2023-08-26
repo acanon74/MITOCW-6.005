@@ -17,6 +17,8 @@ public class MinesweeperServer {
     // System thread safety argument
     //   TODO Problem 5
 
+    //TODO abstraction function, rep invariants, safety from rep exposure
+
     /** Default server port. */
     private static final int DEFAULT_PORT = 4444;
     /** Maximum port number as defined by ServerSocket. */
