@@ -10,39 +10,40 @@ import java.util.List;
 /**
  * TODO: Specification
  * Given horizontal and vertical sizes, it represents a board of the game minesweeper. Minimum
- * dimensions are 5x5, and maximum are 30x16.
- *
- * The board is composed from Y lines, each with X squares. Every square can represent 4
+ * and maximum dimensions are 5x5 and 30x16, respectively.
+ * <p>
+ * The board is composed from X lines, each with Y squares. Every square can represent 4
  * states: untouched, flagged, dug and count. (Where count displays the number of neighboring bombs, and
  * dug is just count=0).
- *
- * The coordinates (0,0) start at the top-left corner. Increasing horizontally to the right and
- * vertically downwards.
+ * <p>
+ * The coordinates (0,0) start at the top-left corner. X coordinates increase downwards. Y coordinates
+ * increase rightwards.
  */
 public class Board {
 
-
-    //TODO abstraction f, rep invariant, safety exposure, thread.
     /**
      * Abstraction function:
      * Represents a board from the game Minesweeper.
-     *
+     * <p>
      * Rep invariant:
      * The original number of rows and columns must be maintained.
      * A square must have one of the 4 states.
-     *
+     * activeBombCount and board must account for the same number of ACTIVE bombs (not flagged or detonated).
+     * <p>
      * Safety from rep exposure:
-     *
+     * <p>
      *
      * Thread safety:
      *
      */
+    //TODO bombCount must be equal to the active bombs, that is, the number of bombs which have not been flagged.
     public final int sizeX;
     public final int sizeY;
     public char[][] board;
-    public ArrayList<Pair<Integer, Integer>> bombLocations;
-    private int bombCount;
-
+    public ArrayList<Bomb> bombLocations = new ArrayList<>();
+    public int activeBombCount;
+    private final ArrayList<Character> counterCharacters = new ArrayList<>(List.of('-', '1', '2', '3', '4', '5', '6', '7', '8'));
+    private final ArrayList<Character> allValidStates = new ArrayList<>(List.of(' ', 'F', '-', '1', '2', '3', '4', '5', '6', '7', '8'));
 
     public Board(int sizeX, int sizeY) {
 
@@ -58,10 +59,10 @@ public class Board {
                 Arrays.fill(arr, '-');
             }
         }
+        checkRep();
     }
-//TODO update docs and test to reflect new constructor
-    //TODO new constructor which autoplaces mines. It must
-    //accept a density parameter to auto place mines. apparently .20 is ideal
+
+//TODO update docs and test to reflect new constructor, new constructor which auto-place mines. It must accept a density parameter to auto place mines. apparently .20 is ideal
     public Board(char[][] originalBoard) {
 
         this.sizeX = originalBoard.length;
@@ -72,45 +73,122 @@ public class Board {
         } else {
             this.board = Arrays.copyOf(originalBoard,originalBoard.length);
         }
+        checkRep();
     }
 
-    //TODO checkRep()
-    //TODO toString(), equals(), and hashcode() methods.
+    private void checkRep() {
+
+        //dimensions of the grid are guarantee by the immutability of an array.
+        assert ((board.length == sizeX) && (board[0].length == sizeY));
+
+        //Every char corresponds to a valid state.
+        for(char[] arr : board) {
+            for(char c : arr) {
+                assert allValidStates.contains(c);
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        String result;
+
+        result = "Size: " + sizeX + "x" + sizeY + "Bombs: " + activeBombCount + "\r\n";
+
+        for(char[] arr : board) {
+            result = result + Arrays.toString(arr) + "\r\n";
+        }
+        return result;
+    }
+
+    /**
+     * Two Board objects must be equal if their boards are equal and
+     * their bombs are located in the same positions. Amount of bombs must
+     * be equal too.
+     *
+     * @param obj Object of type Board to compare this to.
+     * @return true if the boards and bombs qualities (location and quantity) are the same. Otherwise, false.
+     */
+    @Override
+    public boolean equals(Object obj){
+
+        if(obj == null){
+            return false;
+        }
+
+        if(obj.getClass() != this.getClass()){
+            return false;
+        }
+
+        final Board other = (Board) obj;
+
+        return ((this.board == other.board) && (this.bombLocations == other.bombLocations));
+    }
+
+    /**
+     * Two objects which are considered equal must calculate equal hashes.
+     * Since we define equality of Board objects as having equal boards and bomb's qualities (location and quantity),
+     * we hash using board and bombLocations fields only.
+     *
+     * @return int representing a hash for this object.
+     */
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(this.board) + this.bombLocations.hashCode();
+    }
 
     /**
      * Changes the state of the square at the given X,Y coordinates to the
      * new state indicated by the command parameter.
-     *
+     * <p>
      * This method is the public interface for the setFlagged, setDug, setCount
      * methods. setSquare makes all of this methods thread safe.
+     * <p>
      *
-     * //TODO this is for the sub methods
-     * If the coordinates are not inside the grid, a RuntimeException is thrown.
-     * If the state of square was not changed (i.e. the state had already that value) false is
-     * returned. If the state was modified, it returns true.
-     *
+     * The square specified by X, Y must be INSIDE the grid OR be a boundary square. Otherwise, a
+     * RuntimeException is thrown.
+     * <p>
      * Returns bomb if the player activated a bomb.
-     * Returns true if it was modified successfully and there is no further consequences
+     * Returns "true" if the board was modified successfully and there is no further consequences
      * for the player.
-     * Returns false if there was an error modifying the board.
+     * Returns "false" if there was an error modifying the board. (i.e. the state had already that value or its state is "flagged")
      *
      * @param X coordinate on the X axis.
      * @param Y coordinate on the Y axis.
      * @param command A String equal to: flagged, dug or count.
      *
-     * @return An enumeration type value corresponding with the actions to be taken by
-     * the server.
-     * @throws RuntimeException when the coordinates are not inside the grid.
+     * @return "bomb", "true" or "false", as explained above.
+     * @throws RuntimeException when the coordinates are not inside the grid or part of a boundary.
      */
-    //TODO setSquare is the one to check whether the coords are
-    //outside the grid.
-    //TODO the return value should actually be an enum value.
-    public String setSquare(int X, int Y, String command) throws RuntimeException {return "null";}
+    //TODO This use case is better fitted for an Enum datatype.
+    public String setSquare(int X, int Y, String command) throws RuntimeException {
+
+        if(X < 0 || Y < 0 || X >= sizeX || Y >= sizeY) {
+            throw new RuntimeException("Out of bounds square");
+        }
+
+        if(command.equals("dug")) {
+            return setDug(X, Y);
+
+        } else if(command.equals("flagged")) {
+
+            if (setFlagged(X, Y)) {
+                return "true";
+
+            } else {
+                return "false";
+            }
+        }
+        return "false";
+    }
 
     /**
      * Sets the status of the square indicated by the given coordinates
-     * to be flagged. The method keeps track of active bombs using the
-     * bombCount field.
+     * to be flagged. The method marks the bombs as tracked using the
+     * bombLocations array, and keeps track of remaining, active bombs
+     * using the activeBombCount field.
+     * <p>
+     * The square specified by X, Y must be INSIDE the grid OR be a boundary square.
      *
      * @param X coordinate on the X axis.
      * @param Y coordinate on the Y axis.
@@ -123,72 +201,112 @@ public class Board {
         if (square == '-') {
             this.board[X][Y] = 'F';
 
-            if (bombLocations.contains(new Pair<>(X, Y))) {
-                bombLocations.remove(new Pair<>(X, Y));
-                bombCount--;
+            int indexBomb = bombLocations.indexOf(new Bomb(X, Y));
+
+            if (indexBomb != -1) {
+                bombLocations.get(indexBomb).flagged = true;
+                activeBombCount--;
             }
+            checkRep();
             return true;
         } else {
+            checkRep();
             return false;
         }
     }
 
     /**
      * Sets the status of the square indicated by the given coordinates
-     * to be dug. Should the square contain a bomb, it will inform the server
-     * in order to kick the player. Otherwise, it will change the status from
-     * untouched to count, calculating the number of neighboring bombs.
+     * to be dug. Should the square contain a bomb, it returns a String "bomb" and removes
+     * the bomb from bombLocations and bombCount.
+     * Otherwise, it will change the status from untouched to count, calling calculateCount and propagate.
+     * <p>
+     * The square specified by X, Y must be INSIDE the grid OR be a boundary square.
      *
      * @param X coordinate on the X axis.
      * @param Y coordinate on the Y axis.
-     * @return Whether a bomb was found at X, Y.
+     * @return "bomb" if a bomb was found at X, Y. "true" if we successfully changed the status to count, but a bomb was not found.
+     * "false" if the board was not modified, and a bomb was not found.
      */
-    private boolean setDug(int X, int Y) {
+    //TODO This use case is better fitted for an Enum datatype.
+    private String setDug(int X, int Y) {
 
-        if(bombLocations.contains(new Pair<>(X, Y))) {
-            return true;
-        } else {
-            int nearbyBombs = calculateCount(X, Y);
-            setCount(X, Y, nearbyBombs);
+        if(this.board[X][Y] == '-') {
+
+            int nNearbyBombs = calculateCount(X, Y);
+            setCount(X, Y, nNearbyBombs);
             propagate(X, Y);
-            return false;
+
+            if (bombLocations.contains(new Bomb(X, Y))) {
+                bombLocations.remove(new Bomb(X, Y));
+                activeBombCount--;
+                checkRep();
+                return "bomb";
+            } else {
+                checkRep();
+                return "true";
+            }
+        } else {
+            checkRep();
+            return "false";
         }
     }
 
     /**
      * Sets the count of the square indicated by the given coordinates
-     * to be counter parameter.
-     *
-     * Returns true if the square contained a bomb. Otherwise, returns false.
+     * to be the counter parameter.
+     * <p>
+     * The square specified by X, Y must be INSIDE the grid OR be a boundary square.
      *
      * @param X coordinate on the X axis.
      * @param Y coordinate on the Y axis.
      * @param counter Integer to be displayed in the board.
-     * @return True if the square contained a bomb. Otherwise, false.
+     * @return true if it successfully replaced the character. Otherwise, false.
      */
     private boolean setCount(int X, int Y, int counter) {
 
         char square = this.board[X][Y];
-        ArrayList<Character> validChars = new ArrayList<>(List.of('0', '1', '3', '4', '5', '6', '7', '8'));
 
-        if(!validChars.contains(square)) {
-            return false;
-        } else {
-            this.board[X][Y] = (char) counter;
+        if(counterCharacters.contains(square)) {
+
+            if(counter == 0) {
+                this.board[X][Y] = ' ';
+            } else {
+                this.board[X][Y] = (char) (counter + '0');
+            }
+            checkRep();
             return true;
+
+        } else {
+            checkRep();
+            return false;
         }
     }
 
     /**
-     * Calculates the number of neighboring bombs in an 8 square grid
-     * surroundings of the given coordinates.
+     * Calculates the number of neighboring bombs in the 8-square grid
+     * surround the given coordinate.
+     * <p>
+     * The square specified by X, Y must be INSIDE the grid OR be a boundary square.
      *
      * @param X coordinate on the X axis.
      * @param Y coordinate on the Y axis.
      * @return The count of neighboring bombs.
      */
     private int calculateCount(int X, int Y) {
-        return 0;
+
+        int count = 0;
+
+            if (bombLocations.contains(new Bomb(X-1, Y))) count++;
+            if (bombLocations.contains(new Bomb(X-1, Y+1))) count++;
+            if (bombLocations.contains(new Bomb(X, Y+1))) count++;
+            if (bombLocations.contains(new Bomb(X+1, Y+1))) count++;
+            if (bombLocations.contains(new Bomb(X+1, Y))) count++;
+            if (bombLocations.contains(new Bomb(X+1, Y-1))) count++;
+            if (bombLocations.contains(new Bomb(X, Y-1))) count++;
+            if (bombLocations.contains(new Bomb(X-1, Y-1))) count++;
+
+        return count;
     }
 
     /**
@@ -197,16 +315,48 @@ public class Board {
      * @return int, the number of bombs which have not been or dug.
      */
     public int getNumberActiveBombs() {
-        return bombCount;
+        checkRep();
+        return activeBombCount;
     }
 
     /**
-     * Implements the propagation of the dug state to nearby squares of the X, Y coordinates,
-     * if and only if those squares have state untouched and are not bombs.
+     * If the square x,y has no neighbor squares with bombs, then for each of x,y’s untouched
+     * neighbor squares, change said square to dug and repeat this step (not the entire DIG procedure)
+     * recursively for said neighbor square unless said neighbor square was already dug before said change.
+     *
+     * @param X x coordinate.
+     * @param Y y coordinate.
+     * @return It propagates the dug state, modifying the board array.
      */
-    public void propagate(int X, int Y) {}
-    // TODO: Abstraction function, rep invariant, rep exposure, thread safety
-    
-    // TODO: Specify, test, and implement in problem 2
-    
+    public void propagate(int X, int Y) {
+
+        if(X >= board.length || Y >= board.length || X < 0 || Y < 0) {
+            return;
+        }
+
+        if(this.board[X][Y] == '-') {
+
+            if (calculateCount(X, Y) == 0) {
+                this.board[X][Y] = ' ';
+
+                    propagate(X - 1, Y);
+                    propagate(X - 1, Y + 1);
+                    propagate(X, Y + 1);
+                    propagate(X + 1, Y + 1);
+                    propagate(X + 1, Y);
+                    propagate(X + 1, Y - 1);
+                    propagate(X, Y - 1);
+                    propagate(X - 1, Y - 1);
+
+
+            } else {
+                setCount(X, Y, calculateCount(X, Y));
+                checkRep();
+                return;
+            }
+        } else {
+            checkRep();
+            return;
+        }
+    }
 }

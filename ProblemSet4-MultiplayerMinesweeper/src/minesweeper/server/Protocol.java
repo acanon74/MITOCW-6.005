@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 
 /**
  * Protocol implements the communication protocol used by the server and clients.
- *
+ * <p>
  * The description of the protocol can be found in extensive detail at:
  * <a href="https://ocw.mit.edu/ans7870/6/6.005/s16/psets/ps4/#problem_1_set_up_the_server_to_deal_with_multiple_clients:~:text=and%20exit%20telnet.-,Protocol%20and%20specification,-You%20must%20implement">...</a>
  */
