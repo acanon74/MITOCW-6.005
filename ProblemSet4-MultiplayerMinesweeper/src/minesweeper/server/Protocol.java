@@ -2,7 +2,7 @@ package minesweeper.server;
 
 import java.net.ServerSocket;
 
-
+import minesweeper.Board;
 /**
  * Protocol implements the communication protocol used by the server and clients.
  * <p>
@@ -11,62 +11,104 @@ import java.net.ServerSocket;
  */
 public class Protocol {
 
-    public int X;
-    public int Y;
-    ServerSocket socket;
+    /**
+     * Abstraction function:
+     * Represents the communication protocol used on the MineSweeper game.
+     * <p>
+     * Representation invariant:
+     * X, Y must be the size of the board used in the game.
+     * socket must be the socket used by the server.
+     * <p>
+     * Safety from Rep exposure:
+     * X, Y and socket are final and private.
+     *
+     * Thread safety:
+     * Its fields are immutable, so they do not pose a risk of interleaving.
+     * Whenever the handleRequest method access an object's fields or methods, it does so
+     * using synchronized methods.
+     * There is only one protocol object created. Because it is a static field of the
+     * server, and it is passed by reference to each Thread.
+     * For a ThreadPlayer to mutate the board, it must first acquire its lock.
+     */
 
-    public Protocol (ServerSocket socket, int X, int Y) {
+    final private int X;
+    final private int Y;
+    final private ServerSocket socket;
+    final private Board board;
+
+    public Protocol (ServerSocket socket, Board board, int X, int Y) {
         this.socket = socket;
+        this.board = board;
         this.X = X;
         this.Y = Y;
     }
 
     public String handleRequest(String input) {
-        String regex = "(look)|(help)|(bye)|"
-                + "(dig -?\\d+ -?\\d+)|(flag -?\\d+ -?\\d+)|(deflag -?\\d+ -?\\d+)";
-        if ( ! input.matches(regex)) {
-            // invalid input
-            // TODO Problem 5
-        }
-        String[] tokens = input.split(" ");
-        if (tokens[0].equals("look")) {
-            // 'look' request
-            // TODO Problem 5
-        } else if (tokens[0].equals("help")) {
-            // 'help' request
-            // TODO Problem 5
-        } else if (tokens[0].equals("bye")) {
-            // 'bye' request
-            // TODO Problem 5
-        } else if (input.equals("test")) {
-            return socket.getLocalSocketAddress().toString();
-        } else if (input.equals("hello")) {
-            return "Welcome to Minesweeper. Board: " + X + " columns by " + Y + " rows. Players: " + MinesweeperServer.playerCount +
-            " including you. Type 'help' for help.";
-        } else if (input.equals("players")) {
 
-            String table = "\n\r";
-            for (Player player : MinesweeperServer.players) {
-                table = table + player.name + " : " + player.score + "\n\r";
-            }
-            return table;
-        }
+        synchronized (board) {
 
-        else {
-            int x = Integer.parseInt(tokens[1]);
-            int y = Integer.parseInt(tokens[2]);
-            if (tokens[0].equals("dig")) {
-                // 'dig x y' request
-                // TODO Problem 5
-            } else if (tokens[0].equals("flag")) {
-                // 'flag x y' request
-                // TODO Problem 5
-            } else if (tokens[0].equals("deflag")) {
-                // 'deflag x y' request
+            String regex = "(look)|(help)|(bye)|"
+                    + "(dig -?\\d+ -?\\d+)|(flag -?\\d+ -?\\d+)|(deflag -?\\d+ -?\\d+)";
+            if ( ! input.matches(regex)) {
+                // invalid input
                 // TODO Problem 5
             }
+            String[] tokens = input.split(" ");
+            if (tokens[0].equals("look")) {
+                return board.bombLocations.toString() + board.toString();
+                // TODO Problem 5
+            } else if (tokens[0].equals("help")) {
+                // 'help' request
+                // TODO Problem 5
+            } else if (tokens[0].equals("bye")) {
+                return "Bye! Thank you for playing\n";
+                // TODO Problem 5
+            } else if (input.equals("test")) {
+                return socket.getLocalSocketAddress().toString();
+            } else if (input.equals("hello")) {
+                return "Welcome to Minesweeper. Board: " + X + " columns by " + Y + " rows. Players: " + MinesweeperServer.playerCount +
+                " including you. Type 'help' for help.\n";
+            } else if (input.equals("players")) {
+                String table = "\r\n";
+                for (Player player : MinesweeperServer.players) {
+                    table = table + "||> " + player.name + " : " + player.getScore() + "\n";
+                }
+                return table;
+            }
+
+            else {
+                int x = Integer.parseInt(tokens[1]);
+                int y = Integer.parseInt(tokens[2]);
+                if (tokens[0].equals("dig")) {
+
+                    String outcome = board.setSquare(x, y, "dug", true);
+    //didnt find bomb, +1 score
+                    if(outcome.equals("bomb")) {
+                        return handleRequest("look") + "**> You Exploded!\n";
+                    } else if(outcome.equals("true")) {
+                        return handleRequest("look") + "Move received at (" + x + ", " + y + ")\n";
+                    } else {
+                        return handleRequest("look") + "That move is not possible now, be faster!\n";
+                    }
+
+                    // 'dig x y' request
+                    // TODO Problem 5
+                } else if (tokens[0].equals("flag")) {
+                    String outcome = board.setSquare(x, y, "flagged", false);
+                    if(outcome.equals("true")) {
+                        return handleRequest("look") + "Move received at (" + x + ", " + y + ")\n";
+                    } else {
+                        return handleRequest("look") + "That move is not possible now, be faster!\n";
+                    }
+                    // 'flag x y' request
+                    // TODO Problem 5
+                } else if (tokens[0].equals("deflag")) {
+                    // 'deflag x y' request
+                    // TODO Problem 5
+                }
+            }
+            // TODO: Should never get here, make sure to return in each of the cases above
+            throw new UnsupportedOperationException();
         }
-        // TODO: Should never get here, make sure to return in each of the cases above
-        throw new UnsupportedOperationException();
     }
 }

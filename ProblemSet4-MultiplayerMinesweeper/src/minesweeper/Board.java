@@ -7,16 +7,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import java.util.Random;
+
 /**
- * TODO: Specification
  * Given horizontal and vertical sizes, it represents a board of the game minesweeper. Minimum
  * and maximum dimensions are 5x5 and 30x16, respectively.
  * <p>
- * The board is composed from X lines, each with Y squares. Every square can represent 4
+ * The board is composed of X lines, each with Y squares. Every square can represent 4
  * states: untouched, flagged, dug and count. (Where count displays the number of neighboring bombs, and
  * dug is just count=0).
  * <p>
- * The coordinates (0,0) start at the top-left corner. X coordinates increase downwards. Y coordinates
+ * The coordinates (0,0) start in the top-left corner. X coordinates increase downwards. Y coordinates
  * increase rightwards.
  */
 public class Board {
@@ -27,25 +28,37 @@ public class Board {
      * <p>
      * Rep invariant:
      * The original number of rows and columns must be maintained.
-     * A square must have one of the 4 states.
-     * activeBombCount and board must account for the same number of ACTIVE bombs (not flagged or detonated).
+     * A square must have any of the 4 valid states.
+     * activeBombCount and the board must account for the same number of ACTIVE bombs (not flagged or detonated).
      * <p>
      * Safety from rep exposure:
+     * sizeX, sizeY are final.
+     * The reference to board, activeBombCount and bombLocations are final.
+     * Mutations to the board are exclusively performed from setSquare, which calls the required methods
+     * as necessary. All other methods are private.
+     * getNumberActiveBombs() is the getter for activeBombCount, which doesn't expose how the number
+     * is calculated.
      * <p>
-     *
      * Thread safety:
-     *
+     * sizeX, sizeY are immutable. So they do not pose a risk of interleaving.
+     * The reference to board is final. board can only be mutated under synchronized methods, which is thread safe.
+     * The reference to bombLocations is final, and mutations are perform exclusively under synchronized methods.
+     * Reads from and mutations to activeBombCount are performed exclusively under synchronized methods.
+     * methods toString(), equals(), hashCode() are synchronized.
+     * getNumberActiveBombs() is synchronized and is a getter to activeBombCounter.
+     * All other methods are private and called only by setSquare, which is a synchronized method.
      */
-    //TODO bombCount must be equal to the active bombs, that is, the number of bombs which have not been flagged.
     public final int sizeX;
     public final int sizeY;
-    public char[][] board;
-    public ArrayList<Bomb> bombLocations = new ArrayList<>();
-    public int activeBombCount;
+    public final char[][] board;
+    public final ArrayList<Bomb> bombLocations = new ArrayList<>();
+    private int activeBombCount;
     private final ArrayList<Character> counterCharacters = new ArrayList<>(List.of('-', '1', '2', '3', '4', '5', '6', '7', '8'));
     private final ArrayList<Character> allValidStates = new ArrayList<>(List.of(' ', 'F', '-', '1', '2', '3', '4', '5', '6', '7', '8'));
-
-    public Board(int sizeX, int sizeY) {
+    public Board(int sizeX, int sizeY, boolean populate) {
+        this(sizeX, sizeY, populate, null, 0);
+    }
+    public Board(int sizeX, int sizeY, boolean populate, final ArrayList<Bomb> bombLocations, int activeBombCount) {
 
         if(sizeX < 5 || sizeX > 30 || sizeY < 5 || sizeY > 16) {
             throw new RuntimeException("These dimensions are not allowed");
@@ -55,27 +68,28 @@ public class Board {
             this.sizeY = sizeY;
             this.board = new char[sizeX][sizeY];
 
-            for (char[] arr : board) {
+
+            if(bombLocations != null) {
+
+                this.bombLocations.addAll(bombLocations);
+                System.out.println(Arrays.toString(bombLocations.toArray()));
+                System.out.println(Arrays.toString((this.bombLocations.toArray())));
+                this.activeBombCount = activeBombCount;
+
+            } else {
+
+                if(populate) {
+                    this.populate(0.2);
+                }
+            }
+
+            for (final char[] arr : board) {
                 Arrays.fill(arr, '-');
             }
+
         }
         checkRep();
     }
-
-//TODO update docs and test to reflect new constructor, new constructor which auto-place mines. It must accept a density parameter to auto place mines. apparently .20 is ideal
-    public Board(char[][] originalBoard) {
-
-        this.sizeX = originalBoard.length;
-        this.sizeY = originalBoard[0].length;
-
-        if(sizeX < 5 || sizeX > 30 || sizeY < 5 || sizeY > 16) {
-            throw new RuntimeException("These dimensions are not allowed");
-        } else {
-            this.board = Arrays.copyOf(originalBoard,originalBoard.length);
-        }
-        checkRep();
-    }
-
     private void checkRep() {
 
         //dimensions of the grid are guarantee by the immutability of an array.
@@ -88,15 +102,14 @@ public class Board {
             }
         }
     }
-
     @Override
-    public String toString() {
+    public synchronized String toString() {
         String result;
 
-        result = "Size: " + sizeX + "x" + sizeY + "Bombs: " + activeBombCount + "\r\n";
+        result = "Size: " + sizeX + "x" + sizeY + "Bombs: " + activeBombCount + "\n";
 
         for(char[] arr : board) {
-            result = result + Arrays.toString(arr) + "\r\n";
+            result = result + Arrays.toString(arr) + "\n";
         }
         return result;
     }
@@ -110,7 +123,7 @@ public class Board {
      * @return true if the boards and bombs qualities (location and quantity) are the same. Otherwise, false.
      */
     @Override
-    public boolean equals(Object obj){
+    public synchronized boolean equals(Object obj){
 
         if(obj == null){
             return false;
@@ -133,7 +146,7 @@ public class Board {
      * @return int representing a hash for this object.
      */
     @Override
-    public int hashCode() {
+    public synchronized int hashCode() {
         return Arrays.deepHashCode(this.board) + this.bombLocations.hashCode();
     }
 
@@ -160,15 +173,15 @@ public class Board {
      * @return "bomb", "true" or "false", as explained above.
      * @throws RuntimeException when the coordinates are not inside the grid or part of a boundary.
      */
-    //TODO This use case is better fitted for an Enum datatype.
-    public String setSquare(int X, int Y, String command) throws RuntimeException {
 
+    public synchronized String setSquare(int X, int Y, String command, boolean propagate) throws RuntimeException {
+        //TODO This use case is better fitted for an Enum datatype.
         if(X < 0 || Y < 0 || X >= sizeX || Y >= sizeY) {
             throw new RuntimeException("Out of bounds square");
         }
 
         if(command.equals("dug")) {
-            return setDug(X, Y);
+            return setDug(X, Y, propagate);
 
         } else if(command.equals("flagged")) {
 
@@ -204,7 +217,7 @@ public class Board {
             int indexBomb = bombLocations.indexOf(new Bomb(X, Y));
 
             if (indexBomb != -1) {
-                bombLocations.get(indexBomb).flagged = true;
+                bombLocations.get(indexBomb).setFlag(true);
                 activeBombCount--;
             }
             checkRep();
@@ -228,18 +241,18 @@ public class Board {
      * @return "bomb" if a bomb was found at X, Y. "true" if we successfully changed the status to count, but a bomb was not found.
      * "false" if the board was not modified, and a bomb was not found.
      */
-    //TODO This use case is better fitted for an Enum datatype.
-    private String setDug(int X, int Y) {
-
+    private String setDug(int X, int Y, boolean propagate) {
+        //TODO This use case is better fitted for an Enum datatype.
         if(this.board[X][Y] == '-') {
 
             int nNearbyBombs = calculateCount(X, Y);
+            if(propagate) propagate(X, Y);
             setCount(X, Y, nNearbyBombs);
-            propagate(X, Y);
 
             if (bombLocations.contains(new Bomb(X, Y))) {
                 bombLocations.remove(new Bomb(X, Y));
                 activeBombCount--;
+
                 checkRep();
                 return "bomb";
             } else {
@@ -314,7 +327,7 @@ public class Board {
      *
      * @return int, the number of bombs which have not been or dug.
      */
-    public int getNumberActiveBombs() {
+    public synchronized int getNumberActiveBombs() {
         checkRep();
         return activeBombCount;
     }
@@ -328,13 +341,13 @@ public class Board {
      * @param Y y coordinate.
      * @return It propagates the dug state, modifying the board array.
      */
-    public void propagate(int X, int Y) {
+    private synchronized void propagate(int X, int Y) {
 
         if(X >= board.length || Y >= board.length || X < 0 || Y < 0) {
             return;
         }
 
-        if(this.board[X][Y] == '-') {
+        if(counterCharacters.contains(this.board[X][Y])) {
 
             if (calculateCount(X, Y) == 0) {
                 this.board[X][Y] = ' ';
@@ -348,7 +361,6 @@ public class Board {
                     propagate(X, Y - 1);
                     propagate(X - 1, Y - 1);
 
-
             } else {
                 setCount(X, Y, calculateCount(X, Y));
                 checkRep();
@@ -358,5 +370,29 @@ public class Board {
             checkRep();
             return;
         }
+    }
+    /**
+     * Given a desired density of bombs, the method computes the maximum number of bombs and
+     * places them in the grid. This method mutates the grid and the activeBombCount fields.
+     * @param density desired density for the bombs.
+     */
+    private synchronized void populate(double density) {
+
+        int nBombs = (int) ((sizeX*sizeY)*density);
+
+        Random random = new Random();
+        for (int count = 0; count < nBombs; count++) {
+            int row = random.nextInt(sizeX);
+            int col = random.nextInt(sizeY);
+
+            Bomb newBomb = new Bomb(row, col);
+
+            if(!bombLocations.contains(newBomb)) {
+                bombLocations.add(newBomb);
+            } else {
+                count--;
+            }
+        }
+        this.activeBombCount = nBombs;
     }
 }

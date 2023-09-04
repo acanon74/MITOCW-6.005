@@ -1,38 +1,47 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
 package minesweeper;
-//TODO change docs to allow for general L, since this was adapted from Strings only
 /**
  * This data structure stores String a and b, which in context should relate.
  * <p>
  * We implement equals() to compare the source and target of two Bomb object.
  * Using the String nature of the data, we implement hashCode() to produce a string hash with the form "source target".
- *
  */
 
 public class Bomb {
-    final int x;
-    final int y;
-
-    public boolean flagged;
+    private final int x;
+    private final int y;
+    private boolean flagged;
 
     /**
      * Abstraction function:
      * Represents a bomb from the Minesweeper game. It stores x and y coordinates as well as a flagged state.
      * <p>
      * Representation invariant:
+     * x, y must be coordinates inside or on a boundary of the board.
      * <p>
      * Safety from Rep exposure:
-     * x, y are final.
-     * x, y have package level exposure.
+     * x, y are final and private.
+     * flagged is private and must be accessed through getters and setters.
+     *
+     * Thread safety:
+     * x, y are final and therefore don't pose a risk of interleaving.
+     * getters and setters for the flagged field are synchronized.
+     * Reads of the object through equals() and hashCode() don't need
+     * to be synchronized, since they only compute using the fields x, y, which
+     * we defined thread safe.
+     * toString() must be synchronized since it computes using the flagged method, which is immutable to other threads.
      */
 
     public Bomb(int a, int b) {
         this.x = a;
         this.y = b;
         this.flagged = false;
+    }
+
+    public synchronized void setFlag(boolean state) {
+        this.flagged = state;
+    }
+    public synchronized boolean getFlag() {
+        return this.flagged;
     }
 
     /**
@@ -67,5 +76,13 @@ public class Bomb {
     public int hashCode() {
         String beforeHash = (x + "-" + y);
         return beforeHash.hashCode();
+    }
+    /**
+     * Override of the toString method, this returns a String containing the object's fields inside parenthesis.
+     * @return A String with the object's fields formatted onto it.
+     */
+    @Override
+    public synchronized String toString() {
+        return "(" + x + ", " + y + ", " + flagged +")";
     }
 }

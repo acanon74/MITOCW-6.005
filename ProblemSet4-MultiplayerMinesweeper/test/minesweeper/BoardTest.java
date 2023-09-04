@@ -74,7 +74,7 @@ public class BoardTest {
     
     // TODO: Testing strategy
     public Board smallEmptyBoard() {
-        return new Board(5,5);
+        return new Board(5,5, false);
     }
 
     public ArrayList<Bomb> drawingToBoard(char[][] originalBoard) {
@@ -95,7 +95,7 @@ public class BoardTest {
     }
 
     public Board smallBoard() {
-        //with .2 density, total of 5 bombs.
+        //5x5 with .2 density, total of 5 bombs.
         char[][] DRAWING = {
                 {'B', '-', '-', 'B', '-'},
                 {'-', '-', '-', 'B', '-'},
@@ -104,14 +104,11 @@ public class BoardTest {
                 {'-', '-', '-', '-', '-'}
         };
 
-        Board finalBoard = new Board(5, 5);
-        finalBoard.bombLocations = drawingToBoard(DRAWING);
-        finalBoard.activeBombCount = finalBoard.bombLocations.size();
-        return finalBoard;
+        return new Board(5, 5, false, drawingToBoard(DRAWING), 5);
     }
 
     public Board bigBoard() {
-        //with .2 density, total of 20 bombs.
+        //10x10 with .2 density, total of 20 bombs.
         char[][] DRAWING = {//3,2
                 {'-', '-', '-', '-', '-', '-', '-', '-', '-', 'B'},
                 {'-', '-', 'B', '-', '-', '-', 'B', '-', '-', 'B'},
@@ -125,14 +122,11 @@ public class BoardTest {
                 {'-', '-', '-', '-', 'B', '-', '-', '-', '-', '-'}
         };
 
-        Board finalBoard = new Board(10, 10);
-        finalBoard.bombLocations = drawingToBoard(DRAWING);
-        finalBoard.activeBombCount = finalBoard.bombLocations.size();
-        return finalBoard;
+        return new Board(10, 10, false, drawingToBoard(DRAWING), 20);
     }
 
     public Board propagateBoard() {
-        //with .2 density, total of 20 bombs.
+        //9x9 with .2 density, total of 10 bombs.
         char[][] DRAWING = {
                 {'-', '-', '-', '-', '-', '-', '-', '-', 'B'},
                 {'-', '-', '-', '-', '-', '-', '-', '-', '-'},
@@ -145,10 +139,7 @@ public class BoardTest {
                 {'-', 'B', '-', '-', '-', '-', '-', '-', '-'}
         };
 
-        Board finalBoard = new Board(9, 9);
-        finalBoard.bombLocations = drawingToBoard(DRAWING);
-        finalBoard.activeBombCount = finalBoard.bombLocations.size();
-        return finalBoard;
+        return new Board(9, 9, false, drawingToBoard(DRAWING), 10);
     }
 
 
@@ -173,7 +164,7 @@ public class BoardTest {
 
         assertTrue(sameValue(board.board, '-'));
 
-        board = new Board(30,16);
+        board = new Board(30,16, false);
         assertEquals(30, board.sizeX);
         assertEquals(16, board.sizeY);
 
@@ -192,7 +183,7 @@ public class BoardTest {
         Board board = smallBoard();
 
         //Test for coordinates in both boundaries.
-        assertEquals("bomb", board.setSquare(0,0, "dug"));
+        assertEquals("bomb", board.setSquare(0,0, "dug", false));
 
         Board expectedBoard = smallBoard();
         expectedBoard.board[0][0] = ' ';
@@ -201,7 +192,7 @@ public class BoardTest {
         //Test for coordinates inside the grid.
         board = smallBoard();
 
-        assertEquals("true", board.setSquare(1,2, "dug"));
+        assertEquals("true", board.setSquare(1,2, "dug", false));
 
         expectedBoard = smallBoard();
         expectedBoard.board[1][2] = '2';
@@ -214,7 +205,7 @@ public class BoardTest {
         board = smallBoard();
         expectedBoard = smallBoard();
 
-        assertEquals("bomb", board.setSquare(0, 3, "dug"));
+        assertEquals("bomb", board.setSquare(0, 3, "dug", false));
         expectedBoard.board[0][3] = '1';
         assertEquals(expectedBoard.board, board.board);
         //should have removed it
@@ -226,18 +217,18 @@ public class BoardTest {
         board = smallBoard();
         expectedBoard = smallBoard();
 
-        assertEquals("true", board.setSquare(1, 0, "flagged"));
+        assertEquals("true", board.setSquare(1, 0, "flagged", false));
         expectedBoard.board[1][0] = 'F';
         assertEquals(expectedBoard.board, board.board);
 
         //Test of dug on flagged square, without bomb.
         board = smallBoard();
-        board.setSquare(2, 1, "flagged");
+        board.setSquare(2, 1, "flagged", false);
 
         expectedBoard = smallBoard();
         expectedBoard.board[2][1] = 'F';
 
-        assertEquals("false", board.setSquare(2, 1, "dug"));
+        assertEquals("false", board.setSquare(2, 1, "dug", false));
         expectedBoard.board[2][1] = 'F';
         assertEquals(expectedBoard.board, board.board);
         assertEquals(expectedBoard.bombLocations, board.bombLocations);
@@ -248,7 +239,7 @@ public class BoardTest {
         board = bigBoard();
         expectedBoard = bigBoard();
 
-        assertEquals("true", board.setSquare(4, 9, "dug"));
+        assertEquals("true", board.setSquare(4, 9, "dug", false));
         expectedBoard.board[4][9] = ' ';
         assertEquals(expectedBoard.board, board.board);
 
@@ -257,23 +248,23 @@ public class BoardTest {
         expectedBoard = bigBoard();
 
 
-        assertEquals("true", board.setSquare(1, 6, "flagged"));
+        assertEquals("true", board.setSquare(1, 6, "flagged", false));
         expectedBoard.board[1][6] = 'F';
         assertEquals(expectedBoard.board, board.board);
 
         int index = board.bombLocations.indexOf(new Bomb(1, 6));
 
-        assertEquals(true, board.bombLocations.get(index).flagged);
+        assertEquals(true, board.bombLocations.get(index).getFlag());
         assertEquals(19, board.getNumberActiveBombs());
 
         //Test of dug on flagged, with bomb.
         board = bigBoard();
-        board.setSquare(4, 0, "flagged");
+        board.setSquare(4, 0, "flagged", false);
 
         expectedBoard = bigBoard();
         expectedBoard.board[4][0] = 'F';
 
-        assertEquals("false", board.setSquare(4, 0, "dug"));
+        assertEquals("false", board.setSquare(4, 0, "dug", false));
         assertEquals(expectedBoard.board, board.board);
     }
 
@@ -292,10 +283,10 @@ public class BoardTest {
 
         assertEquals(5, board.getNumberActiveBombs());
 
-        board.setSquare(0, 0, "dug");
+        board.setSquare(0, 0, "dug", false);
         assertEquals(4, board.getNumberActiveBombs());
 
-        board.setSquare(0, 3, "flagged");
+        board.setSquare(0, 3, "flagged", false);
         assertEquals(3, board.getNumberActiveBombs());
     }
 
@@ -306,7 +297,7 @@ public class BoardTest {
         Board board = propagateBoard();
 
         //1,3
-        board.propagate(1, 3);
+        board.setSquare(1, 3, "dug", true);
 
         char[][] Expected = {
                 {' ', ' ', ' ', ' ', ' ', ' ', ' ', '1', '-'},

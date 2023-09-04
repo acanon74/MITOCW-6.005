@@ -19,6 +19,24 @@ public class MinesweeperServer {
 
     //TODO abstraction function, rep invariants, safety from rep exposure
 
+    /**
+     * Abstraction function:
+     * Represents a game of minesweeper, handling player moves in a single board.
+     * <p>
+     * Rep invariant:
+     * The board size and content (where are the bombs located) is initialized at the creating of the server.
+     * <p>
+     * Safety from rep exposure:
+     * Fields required for the communication are private and final.
+     * board is final and is mutated through the protocol.
+     * ALl other fields are static.
+     * <p>
+     * Thread safety:
+     * Fields playerCount, players and board are mutated by each thread by acquiring the lock of each object
+     * respectively.
+     * All other fields are static or final, which means they do not pose a risk of interleaving.
+     */
+
     /** Default server port. */
     private static final int DEFAULT_PORT = 4444;
     /** Maximum port number as defined by ServerSocket. */
@@ -29,13 +47,11 @@ public class MinesweeperServer {
     private final ServerSocket serverSocket;
     /** True if the server should *not* disconnect a client after a BOOM message. */
     private final boolean debug;
-
-    public static int playerCount;
-    public static ArrayList<Player> players = new ArrayList<>();
+    static int playerCount;
+    static ArrayList<Player> players = new ArrayList<>();
     /**Default protocol to be used */
-    public Protocol upperProtocol;
-
-    // TODO: Abstraction function, rep invariant, rep exposure
+    static Protocol mainProtocol;
+    final Board board;
 
     /**
      * Make a MinesweeperServer that listens for connections on port. This method sets the
@@ -49,7 +65,10 @@ public class MinesweeperServer {
         playerCount = 0;
         serverSocket = new ServerSocket(port);
         this.debug = debug;
-        upperProtocol = new Protocol(serverSocket, X, Y);
+
+        //Create a new game.
+        board = new Board(X, Y, true);
+        mainProtocol = new Protocol(serverSocket, board, X, Y);
     }
 
     //TODO fix deleting players objects and counter when a players is disconnected.
@@ -85,12 +104,11 @@ public class MinesweeperServer {
      * @throws IOException if the connection encounters an error or terminates unexpectedly
      */
     private void handleConnection(Socket socket) throws IOException {
-        playerCount++;
-        Player player = new Player(playerCount);
-        players.add(player);
 
-        PlayerThread thread = new PlayerThread(player, upperProtocol, socket);
-        thread.promptName();
+        PlayerThread thread = new PlayerThread(mainProtocol, socket);
+
+        players.add(thread.getPlayer());
+        playerCount++;
 
         new Thread(thread).start();
     }
@@ -104,7 +122,7 @@ public class MinesweeperServer {
      * @return message to client, or null if none
      */
     private String handleRequest(String input) {
-        return upperProtocol.handleRequest(input);
+        return mainProtocol.handleRequest(input);
     }
 
     /**
