@@ -36,11 +36,14 @@ public class Protocol {
     final private ServerSocket socket;
     final private Board board;
 
-    public Protocol (ServerSocket socket, Board board, int X, int Y) {
+    final private boolean debug;
+
+    public Protocol (ServerSocket socket, Board board, int X, int Y, boolean debug) {
         this.socket = socket;
         this.board = board;
         this.X = X;
         this.Y = Y;
+        this.debug = debug;
     }
 
     public String handleRequest(String input) {
@@ -51,27 +54,28 @@ public class Protocol {
                     + "(dig -?\\d+ -?\\d+)|(flag -?\\d+ -?\\d+)|(deflag -?\\d+ -?\\d+)";
             if ( ! input.matches(regex)) {
                 // invalid input
-                // TODO Problem 5
             }
             String[] tokens = input.split(" ");
             if (tokens[0].equals("look")) {
-                return board.bombLocations.toString() + board.toString();
-                // TODO Problem 5
+                if(debug) {
+                    return board.bombLocations.toString() + board.toString();
+                } else {
+                    return board.toString();
+                }
             } else if (tokens[0].equals("help")) {
-                // 'help' request
-                // TODO Problem 5
+                return "**> You can use the following commands look, help, " +
+                        "bye, test, hello, dig X Y, flag X Y.\r\n";
             } else if (tokens[0].equals("bye")) {
-                return "Bye! Thank you for playing\n";
-                // TODO Problem 5
+                return "**> Bye! Thank you for playing\r\n";
             } else if (input.equals("test")) {
                 return socket.getLocalSocketAddress().toString();
             } else if (input.equals("hello")) {
-                return "Welcome to Minesweeper. Board: " + X + " columns by " + Y + " rows. Players: " + MinesweeperServer.playerCount +
-                " including you. Type 'help' for help.\n";
+                return "**> Welcome to Minesweeper. Board: " + X + " columns by " + Y + " rows. Players: " + MinesweeperServer.playerCount +
+                " including you. Type 'help' for help.\r\n";
             } else if (input.equals("players")) {
                 String table = "\r\n";
                 for (Player player : MinesweeperServer.players) {
-                    table = table + "||> " + player.name + " : " + player.getScore() + "\n";
+                    table = table + "||> " + player.name + " : " + player.getScore() + "\r\n";
                 }
                 return table;
             }
@@ -81,33 +85,40 @@ public class Protocol {
                 int y = Integer.parseInt(tokens[2]);
                 if (tokens[0].equals("dig")) {
 
+                    if((x < 0) || (y < 0) || (x > X) || (y > Y)) {
+                        return handleRequest("look");
+                    }
                     String outcome = board.setSquare(x, y, "dug", true);
     //didnt find bomb, +1 score
                     if(outcome.equals("bomb")) {
-                        return handleRequest("look") + "**> You Exploded!\n";
+                        if(this.debug) {
+                            return handleRequest("look") + "**> You Exploded!\r\n";
+                        } else {
+                            return "QUIT";
+                        }
                     } else if(outcome.equals("true")) {
-                        return handleRequest("look") + "Move received at (" + x + ", " + y + ")\n";
+                        return handleRequest("look") + "Move received at (" + x + ", " + y + ")\r\n";
                     } else {
-                        return handleRequest("look") + "That move is not possible now, be faster!\n";
+                        return handleRequest("look") + "That move is not possible now, be faster!\r\n";
                     }
 
                     // 'dig x y' request
-                    // TODO Problem 5
                 } else if (tokens[0].equals("flag")) {
                     String outcome = board.setSquare(x, y, "flagged", false);
                     if(outcome.equals("true")) {
-                        return handleRequest("look") + "Move received at (" + x + ", " + y + ")\n";
+                        return handleRequest("look") + "Move received at (" + x + ", " + y + ")\r\n";
                     } else {
-                        return handleRequest("look") + "That move is not possible now, be faster!\n";
+                        return handleRequest("look") + "That move is not possible now, be faster!\r\n";
                     }
-                    // 'flag x y' request
-                    // TODO Problem 5
                 } else if (tokens[0].equals("deflag")) {
-                    // 'deflag x y' request
-                    // TODO Problem 5
+                    String outcome = board.setSquare(x, y, "flagged", false);
+                    if(outcome.equals("true")) {
+                        return handleRequest("look") + "Move received at (" + x + ", " + y + ")\r\n";
+                    } else {
+                        return handleRequest("look") + "That move is not possible now, be faster!\r\n";
+                    }
                 }
             }
-            // TODO: Should never get here, make sure to return in each of the cases above
             throw new UnsupportedOperationException();
         }
     }

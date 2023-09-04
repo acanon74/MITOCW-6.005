@@ -106,10 +106,10 @@ public class Board {
     public synchronized String toString() {
         String result;
 
-        result = "Size: " + sizeX + "x" + sizeY + "Bombs: " + activeBombCount + "\n";
+        result = "\r\nSize: " + sizeX + "x" + sizeY + " Bombs: " + activeBombCount + "\r\n";
 
         for(char[] arr : board) {
-            result = result + Arrays.toString(arr) + "\n";
+            result = result + Arrays.toString(arr) + "\r\n";
         }
         return result;
     }
@@ -222,6 +222,19 @@ public class Board {
             }
             checkRep();
             return true;
+
+        } else if(square == 'F') {
+            this.board[X][Y] = '-';
+
+            int indexBomb = bombLocations.indexOf(new Bomb(X, Y));
+
+            if (indexBomb != -1) {
+                bombLocations.get(indexBomb).setFlag(false);
+                activeBombCount++;
+            }
+            checkRep();
+            return true;
+
         } else {
             checkRep();
             return false;

@@ -85,33 +85,31 @@ public class PlayerThread implements Runnable {
 
         while (true) {
 
-        try {
+            try {
+                line = this.in.readLine();
+                String serverReponse = protocol.handleRequest(line);
 
-            line = this.in.readLine();
 
-            //We use the poison pill technique. Typing QUIT closes the connection and thread.
-            if (line.equalsIgnoreCase("QUIT")) {
+                //We use the poison pill technique. Typing QUIT closes the connection and thread.
+                if (line.equalsIgnoreCase("QUIT") || serverReponse.equals("QUIT")) {
 
-                this.out.println(protocol.handleRequest("bye"));
+                    this.out.println(protocol.handleRequest("bye"));
 
-                synchronized (MinesweeperServer.players) {
-                    MinesweeperServer.players.remove(obj);
-                    MinesweeperServer.playerCount--;
+                    synchronized (MinesweeperServer.players) {
+                        MinesweeperServer.players.remove(obj);
+                        MinesweeperServer.playerCount--;
+                    }
+                        socket.close();
+
                 }
 
-                socket.close();
-                return;
-
-            } else {
-                String serverReponse = protocol.handleRequest(line);
                 this.out.println(serverReponse);
                 this.out.flush();
-            }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
         }
     }
 }

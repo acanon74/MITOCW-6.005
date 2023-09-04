@@ -48,7 +48,7 @@ public class MinesweeperServer {
     /** True if the server should *not* disconnect a client after a BOOM message. */
     private final boolean debug;
     static int playerCount;
-    static ArrayList<Player> players = new ArrayList<>();
+    static final ArrayList<Player> players = new ArrayList<>();
     /**Default protocol to be used */
     static Protocol mainProtocol;
     final Board board;
@@ -68,7 +68,7 @@ public class MinesweeperServer {
 
         //Create a new game.
         board = new Board(X, Y, true);
-        mainProtocol = new Protocol(serverSocket, board, X, Y);
+        mainProtocol = new Protocol(serverSocket, board, X, Y, debug);
     }
 
     //TODO fix deleting players objects and counter when a players is disconnected.
